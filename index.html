@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apprendre l'IA - Chat avec Mistral AI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Chat avec l'IA</h1>
+        <p class="subtitle">Apprenez le fonctionnement de l'IA en interagissant avec Mistral AI</p>
+        
+        <div class="tabs">
+            <button class="tab-button active" data-tab="chat">Chat</button>
+            <button class="tab-button" data-tab="demo">Démonstrations</button>
+            <button class="tab-button" data-tab="workshops">Ateliers</button>
+        </div>
+        
+        <div class="tab-content">
+            <div id="chat-tab" class="tab-pane active">
+                <div id="chat-container">
+                    <div id="chat-messages"></div>
+                    
+                    <div class="chat-input-container">
+                        <textarea id="user-input" placeholder="Posez votre question ici..."></textarea>
+                        <button id="send-button">Envoyer</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="demo-tab" class="tab-pane">
+                <h2>Capacités de l'Intelligence Artificielle</h2>
+                <p class="demo-intro">Découvrez ce que l'IA peut faire grâce à ces exemples. Cliquez sur un exemple pour le tester directement dans le chat.</p>
+                
+                <div class="demo-grid">
+                    <div class="demo-card" data-prompt="Explique-moi comment fonctionne un réseau de neurones artificiels de manière simple.">
+                        <h3>Expliquer des concepts</h3>
+                        <p>L'IA peut expliquer des concepts complexes de manière simple et accessible.</p>
+                        <button class="try-button">Essayer</button>
+                    </div>
+                    
+                    <div class="demo-card" data-prompt="Écris un poème court sur la nature et les saisons.">
+                        <h3>Créer du contenu</h3>
+                        <p>L'IA peut générer des textes créatifs comme des poèmes, des histoires ou des scripts.</p>
+                        <button class="try-button">Essayer</button>
+                    </div>
+                    
+                    <div class="demo-card" data-prompt="Je dois organiser une réunion avec 5 personnes très occupées. Donne-moi des conseils pour faciliter la prise de décision sur une date.">
+                        <h3>Donner des conseils</h3>
+                        <p>L'IA peut fournir des conseils pratiques sur de nombreux sujets du quotidien.</p>
+                        <button class="try-button">Essayer</button>
+                    </div>
+                    
+                    <div class="demo-card" data-prompt="Quels sont les avantages et inconvénients des énergies renouvelables par rapport aux énergies fossiles?">
+                        <h3>Analyser des arguments</h3>
+                        <p>L'IA peut présenter différentes perspectives sur des sujets complexes.</p>
+                        <button class="try-button">Essayer</button>
+                    </div>
+                    
+                    <div class="demo-card" data-prompt="Suggère-moi une recette simple avec des pâtes, des tomates et du fromage.">
+                        <h3>Suggérer des idées</h3>
+                        <p>L'IA peut proposer des idées créatives basées sur des contraintes données.</p>
+                        <button class="try-button">Essayer</button>
+                    </div>
+                    
+                    <div class="demo-card" data-prompt="Traduis cette phrase en anglais, espagnol et allemand: 'J'adore apprendre avec l'intelligence artificielle'.">
+                        <h3>Traduction</h3>
+                        <p>L'IA peut traduire du texte dans différentes langues.</p>
+                        <button class="try-button">Essayer</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="workshops-tab" class="tab-pane">
+                <h2>Ateliers Interactifs</h2>
+                <p class="workshop-intro">Participez à ces ateliers pratiques pour mieux comprendre l'IA et vous exercer à l'utiliser efficacement.</p>
+                
+                <div class="workshop-selector">
+                    <select id="workshop-select">
+                        <option value="prompt-engineering">L'art du prompt engineering</option>
+                        <option value="image-description">Génération de descriptions d'images</option>
+                        <option value="text-analysis">Analyse de texte et sentiment</option>
+                        <option value="creative-writing">Écriture créative assistée par IA</option>
+                    </select>
+                </div>
+                
+                <!-- Atelier 1: Prompt Engineering -->
+                <div class="workshop-content active" id="prompt-engineering-workshop">
+                    <div class="workshop-header">
+                        <h3>L'art du prompt engineering</h3>
+                        <p>Apprenez à formuler des instructions efficaces pour obtenir les meilleures réponses de l'IA.</p>
+                    </div>
+                    
+                    <div class="workshop-steps">
+                        <div class="step">
+                            <h4>Étape 1: Comprendre les bases</h4>
+                            <p>Le prompt engineering consiste à formuler des instructions claires et précises pour guider l'IA vers la réponse souhaitée.</p>
+                            <div class="example-box">
+                                <p><strong>Exemple faible:</strong> "Parle-moi des planètes"</p>
+                                <p><strong>Exemple fort:</strong> "Décris les principales caractéristiques des huit planètes du système solaire, en incluant leur taille relative, composition et particularités notables"</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <h4>Étape 2: Exercice pratique</h4>
+                            <p>Réécrivez ce prompt pour le rendre plus efficace:</p>
+                            <div class="exercise-container">
+                                <textarea id="prompt-exercise" class="exercise-input">Parle-moi de la photographie</textarea>
+                                <button id="evaluate-prompt" class="exercise-button">Évaluer mon prompt</button>
+                                <div id="prompt-feedback" class="feedback-container"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <h4>Étape 3: Testez vos prompts</h4>
+                            <p>Créez votre propre prompt et voyez comment l'IA y répond:</p>
+                            <div class="try-container">
+                                <textarea id="custom-prompt" class="exercise-input" placeholder="Écrivez votre prompt ici..."></textarea>
+                                <button id="try-prompt" class="exercise-button">Tester avec l'IA</button>
+                                <div id="prompt-result" class="result-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Atelier 2: Génération de descriptions d'images -->
+                <div class="workshop-content" id="image-description-workshop">
+                    <div class="workshop-header">
+                        <h3>Génération de descriptions d'images</h3>
+                        <p>Apprenez à décrire des images pour obtenir des résultats similaires avec l'IA.</p>
+                    </div>
+                    
+                    <div class="workshop-steps">
+                        <div class="step">
+                            <h4>Étape 1: Les éléments d'une bonne description</h4>
+                            <p>Une description efficace inclut: le sujet principal, le style, l'ambiance, les couleurs et les détails importants.</p>
+                        </div>
+                        
+                        <div class="step">
+                            <h4>Étape 2: Exercice pratique</h4>
+                            <p>Observez cette image et créez une description détaillée:</p>
+                            <div class="exercise-container">
+                                <div class="sample-image">
+                                    <img src="https://via.placeholder.com/400x300" alt="Image d'exemple" id="sample-image">
+                                    <button id="change-image" class="small-button">Changer d'image</button>
+                                </div>
+                                <textarea id="image-description" class="exercise-input" placeholder="Décrivez l'image..."></textarea>
+                                <button id="generate-similar" class="exercise-button">Générer une description similaire</button>
+                                <div id="image-result" class="result-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Atelier 3: Analyse de texte et sentiment -->
+                <div class="workshop-content" id="text-analysis-workshop">
+                    <div class="workshop-header">
+                        <h3>Analyse de texte et sentiment</h3>
+                        <p>Découvrez comment l'IA peut analyser le ton et le sentiment d'un texte.</p>
+                    </div>
+                    
+                    <div class="workshop-steps">
+                        <div class="step">
+                            <h4>Étape 1: Comprendre l'analyse de sentiment</h4>
+                            <p>L'IA peut détecter si un texte exprime un sentiment positif, négatif ou neutre, ainsi que des émotions spécifiques.</p>
+                        </div>
+                        
+                        <div class="step">
+                            <h4>Étape 2: Analysez vos propres textes</h4>
+                            <div class="exercise-container">
+                                <textarea id="sentiment-text" class="exercise-input" placeholder="Entrez un texte à analyser..."></textarea>
+                                <button id="analyze-sentiment" class="exercise-button">Analyser le sentiment</button>
+                                <div id="sentiment-result" class="result-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Atelier 4: Écriture créative assistée par IA -->
+                <div class="workshop-content" id="creative-writing-workshop">
+                    <div class="workshop-header">
+                        <h3>Écriture créative assistée par IA</h3>
+                        <p>Utilisez l'IA comme partenaire d'écriture pour développer vos idées.</p>
+                    </div>
+                    
+                    <div class="workshop-steps">
+                        <div class="step">
+                            <h4>Étape 1: Commencer avec une idée</h4>
+                            <p>Donnez un point de départ à l'IA et voyez comment elle peut vous aider à développer votre histoire.</p>
+                        </div>
+                        
+                        <div class="step">
+                            <h4>Étape 2: Écriture collaborative</h4>
+                            <div class="exercise-container">
+                                <div class="writing-options">
+                                    <select id="writing-type">
+                                        <option value="story">Histoire courte</option>
+                                        <option value="poem">Poème</option>
+                                        <option value="script">Dialogue</option>
+                                    </select>
+                                    <select id="writing-genre">
+                                        <option value="fantasy">Fantaisie</option>
+                                        <option value="scifi">Science-fiction</option>
+                                        <option value="romance">Romance</option>
+                                        <option value="mystery">Mystère</option>
+                                    </select>
+                                </div>
+                                <textarea id="writing-start" class="exercise-input" placeholder="Commencez votre histoire ici..."></textarea>
+                                <button id="continue-writing" class="exercise-button">Continuer avec l'IA</button>
+                                <div id="writing-result" class="result-container"></div>
+                                <button id="extend-writing" class="exercise-button hidden">Développer davantage</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
