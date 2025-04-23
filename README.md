@@ -2,8 +2,6 @@
 
 Une application web interactive permettant d'explorer et de comprendre les capacités de l'intelligence artificielle via Mistral AI.
 
-![Capture d'écran de l'application](https://via.placeholder.com/800x400?text=Capture+d%27%C3%A9cran+de+l%27application)
-
 ## Fonctionnalités
 
 ### 1. Chat interactif
