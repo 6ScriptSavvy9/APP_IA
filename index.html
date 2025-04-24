@@ -3,221 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apprendre l'IA - Chat avec Mistral AI</title>
+    <title>App IA - Assistant Conversationnel Gamifié</title>
+    <meta name="description" content="Améliorez vos compétences en IA à travers des conversations et des quêtes interactives">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Chat avec l'IA</h1>
-        <p class="subtitle">Apprenez le fonctionnement de l'IA en interagissant avec Mistral AI</p>
-        
-        <div class="tabs">
-            <button class="tab-button active" data-tab="chat">Chat</button>
-            <button class="tab-button" data-tab="demo">Démonstrations</button>
-            <button class="tab-button" data-tab="workshops">Ateliers</button>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <h1>Odyssée IA</h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><button class="tab-button active" data-tab="chat"><i class="fas fa-comments"></i> Chat</button></li>
+                    <li><button class="tab-button" data-tab="quests"><i class="fas fa-tasks"></i> Quêtes</button></li>
+                    <li><button class="tab-button" data-tab="workshop"><i class="fas fa-flask"></i> Atelier</button></li>
+                </ul>
+            </nav>
         </div>
-        
-        <div class="tab-content">
-            <div id="chat-tab" class="tab-pane active">
-                <div id="chat-container">
-                    <div id="chat-messages"></div>
-                    
-                    <div class="chat-input-container">
-                        <textarea id="user-input" placeholder="Posez votre question ici..."></textarea>
-                        <button id="send-button">Envoyer</button>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Section de chat -->
+            <section id="chat-tab" class="tab-pane active">
+                <div class="user-stats">
+                    <div class="stats-item">
+                        <i class="fas fa-user-graduate"></i>
+                        <span id="user-level">Niveau 1</span>
+                    </div>
+                    <div class="stats-item">
+                        <i class="fas fa-star"></i>
+                        <span id="user-xp">0 XP</span>
+                    </div>
+                    <div class="stats-progress">
+                        <div class="progress-bar">
+                            <div id="xp-progress" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span id="progress-text">0/100 XP</span>
                     </div>
                 </div>
-            </div>
-            
-            <div id="demo-tab" class="tab-pane">
-                <h2>Capacités de l'Intelligence Artificielle</h2>
-                <p class="demo-intro">Découvrez ce que l'IA peut faire grâce à ces exemples. Cliquez sur un exemple pour le tester directement dans le chat.</p>
-                
-                <div class="demo-grid">
-                    <div class="demo-card" data-prompt="Explique-moi comment fonctionne un réseau de neurones artificiels de manière simple.">
-                        <h3>Expliquer des concepts</h3>
-                        <p>L'IA peut expliquer des concepts complexes de manière simple et accessible.</p>
-                        <button class="try-button">Essayer</button>
+
+                <div class="chat-container">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="message ai-message">
+                            Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?
+                        </div>
                     </div>
-                    
-                    <div class="demo-card" data-prompt="Écris un poème court sur la nature et les saisons.">
-                        <h3>Créer du contenu</h3>
-                        <p>L'IA peut générer des textes créatifs comme des poèmes, des histoires ou des scripts.</p>
-                        <button class="try-button">Essayer</button>
-                    </div>
-                    
-                    <div class="demo-card" data-prompt="Je dois organiser une réunion avec 5 personnes très occupées. Donne-moi des conseils pour faciliter la prise de décision sur une date.">
-                        <h3>Donner des conseils</h3>
-                        <p>L'IA peut fournir des conseils pratiques sur de nombreux sujets du quotidien.</p>
-                        <button class="try-button">Essayer</button>
-                    </div>
-                    
-                    <div class="demo-card" data-prompt="Quels sont les avantages et inconvénients des énergies renouvelables par rapport aux énergies fossiles?">
-                        <h3>Analyser des arguments</h3>
-                        <p>L'IA peut présenter différentes perspectives sur des sujets complexes.</p>
-                        <button class="try-button">Essayer</button>
-                    </div>
-                    
-                    <div class="demo-card" data-prompt="Suggère-moi une recette simple avec des pâtes, des tomates et du fromage.">
-                        <h3>Suggérer des idées</h3>
-                        <p>L'IA peut proposer des idées créatives basées sur des contraintes données.</p>
-                        <button class="try-button">Essayer</button>
-                    </div>
-                    
-                    <div class="demo-card" data-prompt="Traduis cette phrase en anglais, espagnol et allemand: 'J'adore apprendre avec l'intelligence artificielle'.">
-                        <h3>Traduction</h3>
-                        <p>L'IA peut traduire du texte dans différentes langues.</p>
-                        <button class="try-button">Essayer</button>
+                    <div class="chat-input">
+                        <textarea id="user-input" placeholder="Posez votre question ou tapez une commande..."></textarea>
+                        <button id="send-button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-            
-            <div id="workshops-tab" class="tab-pane">
-                <h2>Ateliers Interactifs</h2>
-                <p class="workshop-intro">Participez à ces ateliers pratiques pour mieux comprendre l'IA et vous exercer à l'utiliser efficacement.</p>
-                
-                <div class="workshop-selector">
-                    <select id="workshop-select">
-                        <option value="prompt-engineering">L'art du prompt engineering</option>
-                        <option value="image-description">Génération de descriptions d'images</option>
-                        <option value="text-analysis">Analyse de texte et sentiment</option>
-                        <option value="creative-writing">Écriture créative assistée par IA</option>
+            </section>
+
+            <!-- Section des quêtes -->
+            <section id="quests-tab" class="tab-pane">
+                <h2>Quêtes & Défis</h2>
+                <p class="quests-intro">
+                    Complétez des quêtes pour améliorer vos compétences avec l'IA et gagner de l'expérience. 
+                    Plus vous progressez, plus vous débloquez de quêtes avancées.
+                </p>
+
+                <div class="quests-filters">
+                    <button class="filter-btn active" data-filter="all">Toutes</button>
+                    <button class="filter-btn" data-filter="beginner">Débutant</button>
+                    <button class="filter-btn" data-filter="intermediate">Intermédiaire</button>
+                    <button class="filter-btn" data-filter="advanced">Avancé</button>
+                    <button class="filter-btn" data-filter="completed">Complétées</button>
+                </div>
+
+                <div class="quests-grid">
+                    <!-- Quête 1 -->
+                    <div class="quest-card" data-id="quest1" data-difficulty="beginner" data-status="available">
+                        <div class="quest-header">
+                            <div class="quest-icon">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="quest-info">
+                                <h3>Premier Contact</h3>
+                                <div class="quest-meta">
+                                    <span class="difficulty beginner">Débutant</span>
+                                    <span class="xp-reward">+20 XP</span>
+                                </div>
+                            </div>
+                            <div class="quest-status">
+                                <i class="fas fa-lock-open"></i>
+                            </div>
+                        </div>
+                        <div class="quest-body">
+                            <p>Présentez-vous à l'IA et posez-lui 3 questions différentes sur l'intelligence artificielle.</p>
+                            <div class="quest-objectives">
+                                <div class="objective" data-id="quest1-obj1">
+                                    <i class="far fa-circle"></i>
+                                    <span>Présentation personnelle</span>
+                                </div>
+                                <div class="objective" data-id="quest1-obj2">
+                                    <i class="far fa-circle"></i>
+                                    <span>Poser 3 questions sur l'IA</span>
+                                </div>
+                            </div>
+                            <button class="quest-button start-quest" data-quest="quest1">Commencer</button>
+                        </div>
+                    </div>
+
+                    <!-- Quête 2 -->
+                    <div class="quest-card" data-id="quest2" data-difficulty="beginner" data-status="available">
+                        <div class="quest-header">
+                            <div class="quest-icon">
+                                <i class="fas fa-feather-alt"></i>
+                            </div>
+                            <div class="quest-info">
+                                <h3>Poète en herbe</h3>
+                                <div class="quest-meta">
+                                    <span class="difficulty beginner">Débutant</span>
+                                    <span class="xp-reward">+25 XP</span>
+                                </div>
+                            </div>
+                            <div class="quest-status">
+                                <i class="fas fa-lock-open"></i>
+                            </div>
+                        </div>
+                        <div class="quest-body">
+                            <p>Demandez à l'IA de créer un poème sur un sujet de votre choix, puis modifiez-le en suggérant des changements.</p>
+                            <div class="quest-objectives">
+                                <div class="objective" data-id="quest2-obj1">
+                                    <i class="far fa-circle"></i>
+                                    <span>Demander un poème</span>
+                                </div>
+                                <div class="objective" data-id="quest2-obj2">
+                                    <i class="far fa-circle"></i>
+                                    <span>Suggérer des modifications</span>
+                                </div>
+                            </div>
+                            <button class="quest-button start-quest" data-quest="quest2">Commencer</button>
+                        </div>
+                    </div>
+
+                    <!-- Quête 3 -->
+                    <div class="quest-card" data-id="quest3" data-difficulty="intermediate" data-status="locked">
+                        <div class="quest-header">
+                            <div class="quest-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="quest-info">
+                                <h3>Apprenti Professeur</h3>
+                                <div class="quest-meta">
+                                    <span class="difficulty intermediate">Intermédiaire</span>
+                                    <span class="xp-reward">+40 XP</span>
+                                </div>
+                            </div>
+                            <div class="quest-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <div class="quest-body">
+                            <p>Demandez à l'IA d'expliquer un concept complexe, puis reformulez l'explication avec vos propres mots.</p>
+                            <div class="requirements">
+                                <p>Nécessite: Niveau 2</p>
+                            </div>
+                            <div class="quest-objectives">
+                                <div class="objective" data-id="quest3-obj1">
+                                    <i class="far fa-circle"></i>
+                                    <span>Demander l'explication d'un concept</span>
+                                </div>
+                                <div class="objective" data-id="quest3-obj2">
+                                    <i class="far fa-circle"></i>
+                                    <span>Reformuler avec vos propres mots</span>
+                                </div>
+                            </div>
+                            <button class="quest-button locked" disabled>Verrouillé</button>
+                        </div>
+                    </div>
+
+                    <!-- Quête 4 -->
+                    <div class="quest-card" data-id="quest4" data-difficulty="intermediate" data-status="locked">
+                        <div class="quest-header">
+                            <div class="quest-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="quest-info">
+                                <h3>Maître des prompts</h3>
+                                <div class="quest-meta">
+                                    <span class="difficulty intermediate">Intermédiaire</span>
+                                    <span class="xp-reward">+50 XP</span>
+                                </div>
+                            </div>
+                            <div class="quest-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <div class="quest-body">
+                            <p>Utilisez l'atelier de prompt engineering pour créer et tester 3 prompts de différentes complexités.</p>
+                            <div class="requirements">
+                                <p>Nécessite: Niveau 2</p>
+                            </div>
+                            <button class="quest-button locked" disabled>Verrouillé</button>
+                        </div>
+                    </div>
+
+                    <!-- Quête 5 -->
+                    <div class="quest-card" data-id="quest5" data-difficulty="advanced" data-status="locked">
+                        <div class="quest-header">
+                            <div class="quest-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="quest-info">
+                                <h3>Débat philosophique</h3>
+                                <div class="quest-meta">
+                                    <span class="difficulty advanced">Avancé</span>
+                                    <span class="xp-reward">+75 XP</span>
+                                </div>
+                            </div>
+                            <div class="quest-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <div class="quest-body">
+                            <p>Engagez un débat philosophique avec l'IA sur la conscience artificielle et les implications éthiques.</p>
+                            <div class="requirements">
+                                <p>Nécessite: Niveau 3</p>
+                            </div>
+                            <button class="quest-button locked" disabled>Verrouillé</button>
+                        </div>
+                    </div>
+
+                    <!-- Quête 6 -->
+                    <div class="quest-card" data-id="quest6" data-difficulty="advanced" data-status="locked">
+                        <div class="quest-header">
+                            <div class="quest-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="quest-info">
+                                <h3>Écrivain collaboratif</h3>
+                                <div class="quest-meta">
+                                    <span class="difficulty advanced">Avancé</span>
+                                    <span class="xp-reward">+100 XP</span>
+                                </div>
+                            </div>
+                            <div class="quest-status">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <div class="quest-body">
+                            <p>Créez une histoire complète en collaboration avec l'IA, en alternant les paragraphes avec elle.</p>
+                            <div class="requirements">
+                                <p>Nécessite: Niveau 4</p>
+                            </div>
+                            <button class="quest-button locked" disabled>Verrouillé</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section de l'atelier -->
+            <section id="workshop-tab" class="tab-pane">
+                <h2>Atelier de Prompt Engineering</h2>
+                <p class="workshop-intro">
+                    Explorez différentes techniques de création de prompts pour obtenir de meilleurs résultats avec l'IA.
+                    Utilisez les templates ci-dessous ou créez les vôtres.
+                </p>
+
+                <div class="template-selector">
+                    <h3>Templates de prompts</h3>
+                    <select id="prompt-template">
+                        <option value="basic">Prompt basique</option>
+                        <option value="creative">Écriture créative</option>
+                        <option value="educational">Educational</option>
+                        <option value="persona">Persona spécifique</option>
+                        <option value="technical">Documentation technique</option>
                     </select>
+                    <button id="load-template">Charger le template</button>
                 </div>
-                
-                <!-- Atelier 1: Prompt Engineering -->
-                <div class="workshop-content active" id="prompt-engineering-workshop">
-                    <div class="workshop-header">
-                        <h3>L'art du prompt engineering</h3>
-                        <p>Apprenez à formuler des instructions efficaces pour obtenir les meilleures réponses de l'IA.</p>
-                    </div>
-                    
-                    <div class="workshop-steps">
-                        <div class="step">
-                            <h4>Étape 1: Comprendre les bases</h4>
-                            <p>Le prompt engineering consiste à formuler des instructions claires et précises pour guider l'IA vers la réponse souhaitée.</p>
-                            <div class="example-box">
-                                <p><strong>Exemple faible:</strong> "Parle-moi des planètes"</p>
-                                <p><strong>Exemple fort:</strong> "Décris les principales caractéristiques des huit planètes du système solaire, en incluant leur taille relative, composition et particularités notables"</p>
-                            </div>
-                        </div>
-                        
-                        <div class="step">
-                            <h4>Étape 2: Exercice pratique</h4>
-                            <p>Réécrivez ce prompt pour le rendre plus efficace:</p>
-                            <div class="exercise-container">
-                                <textarea id="prompt-exercise" class="exercise-input">Parle-moi de la photographie</textarea>
-                                <button id="evaluate-prompt" class="exercise-button">Évaluer mon prompt</button>
-                                <div id="prompt-feedback" class="feedback-container"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="step">
-                            <h4>Étape 3: Testez vos prompts</h4>
-                            <p>Créez votre propre prompt et voyez comment l'IA y répond:</p>
-                            <div class="try-container">
-                                <textarea id="custom-prompt" class="exercise-input" placeholder="Écrivez votre prompt ici..."></textarea>
-                                <button id="try-prompt" class="exercise-button">Tester avec l'IA</button>
-                                <div id="prompt-result" class="result-container"></div>
-                            </div>
-                        </div>
+
+                <div class="workshop-editor">
+                    <textarea id="prompt-editor" placeholder="Écrivez ou modifiez votre prompt ici..."></textarea>
+                    <div class="editor-controls">
+                        <button id="save-prompt">Sauvegarder</button>
+                        <button id="test-prompt">Tester</button>
                     </div>
                 </div>
-                
-                <!-- Atelier 2: Génération de descriptions d'images -->
-                <div class="workshop-content" id="image-description-workshop">
-                    <div class="workshop-header">
-                        <h3>Génération de descriptions d'images</h3>
-                        <p>Apprenez à décrire des images pour obtenir des résultats similaires avec l'IA.</p>
-                    </div>
-                    
-                    <div class="workshop-steps">
-                        <div class="step">
-                            <h4>Étape 1: Les éléments d'une bonne description</h4>
-                            <p>Une description efficace inclut: le sujet principal, le style, l'ambiance, les couleurs et les détails importants.</p>
-                        </div>
-                        
-                        <div class="step">
-                            <h4>Étape 2: Exercice pratique</h4>
-                            <p>Observez cette image et créez une description détaillée:</p>
-                            <div class="exercise-container">
-                                <div class="sample-image">
-                                    <img src="https://via.placeholder.com/400x300" alt="Image d'exemple" id="sample-image">
-                                    <button id="change-image" class="small-button">Changer d'image</button>
-                                </div>
-                                <textarea id="image-description" class="exercise-input" placeholder="Décrivez l'image..."></textarea>
-                                <button id="generate-similar" class="exercise-button">Générer une description similaire</button>
-                                <div id="image-result" class="result-container"></div>
-                            </div>
-                        </div>
+
+                <div class="workshop-history">
+                    <h3>Historique de vos prompts</h3>
+                    <div id="prompt-history" class="history-list">
+                        <!-- Les prompts sauvegardés apparaîtront ici -->
+                        <p class="empty-message">Aucun prompt sauvegardé pour le moment</p>
                     </div>
                 </div>
-                
-                <!-- Atelier 3: Analyse de texte et sentiment -->
-                <div class="workshop-content" id="text-analysis-workshop">
-                    <div class="workshop-header">
-                        <h3>Analyse de texte et sentiment</h3>
-                        <p>Découvrez comment l'IA peut analyser le ton et le sentiment d'un texte.</p>
-                    </div>
-                    
-                    <div class="workshop-steps">
-                        <div class="step">
-                            <h4>Étape 1: Comprendre l'analyse de sentiment</h4>
-                            <p>L'IA peut détecter si un texte exprime un sentiment positif, négatif ou neutre, ainsi que des émotions spécifiques.</p>
-                        </div>
-                        
-                        <div class="step">
-                            <h4>Étape 2: Analysez vos propres textes</h4>
-                            <div class="exercise-container">
-                                <textarea id="sentiment-text" class="exercise-input" placeholder="Entrez un texte à analyser..."></textarea>
-                                <button id="analyze-sentiment" class="exercise-button">Analyser le sentiment</button>
-                                <div id="sentiment-result" class="result-container"></div>
-                            </div>
-                        </div>
-                    </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Popup de récompense -->
+    <div id="reward-popup" class="popup">
+        <div class="popup-content">
+            <div class="reward-header">
+                <i class="fas fa-award"></i>
+                <h3>Quête Complétée !</h3>
+            </div>
+            <div class="reward-body">
+                <p id="reward-message">Vous avez terminé la quête.</p>
+                <div class="xp-gained">
+                    <span id="xp-amount">+20 XP</span>
                 </div>
-                
-                <!-- Atelier 4: Écriture créative assistée par IA -->
-                <div class="workshop-content" id="creative-writing-workshop">
-                    <div class="workshop-header">
-                        <h3>Écriture créative assistée par IA</h3>
-                        <p>Utilisez l'IA comme partenaire d'écriture pour développer vos idées.</p>
+                <div class="level-progress">
+                    <div class="progress-bar">
+                        <div id="popup-progress" class="progress-fill" style="width: 45%"></div>
                     </div>
-                    
-                    <div class="workshop-steps">
-                        <div class="step">
-                            <h4>Étape 1: Commencer avec une idée</h4>
-                            <p>Donnez un point de départ à l'IA et voyez comment elle peut vous aider à développer votre histoire.</p>
-                        </div>
-                        
-                        <div class="step">
-                            <h4>Étape 2: Écriture collaborative</h4>
-                            <div class="exercise-container">
-                                <div class="writing-options">
-                                    <select id="writing-type">
-                                        <option value="story">Histoire courte</option>
-                                        <option value="poem">Poème</option>
-                                        <option value="script">Dialogue</option>
-                                    </select>
-                                    <select id="writing-genre">
-                                        <option value="fantasy">Fantaisie</option>
-                                        <option value="scifi">Science-fiction</option>
-                                        <option value="romance">Romance</option>
-                                        <option value="mystery">Mystère</option>
-                                    </select>
-                                </div>
-                                <textarea id="writing-start" class="exercise-input" placeholder="Commencez votre histoire ici..."></textarea>
-                                <button id="continue-writing" class="exercise-button">Continuer avec l'IA</button>
-                                <div id="writing-result" class="result-container"></div>
-                                <button id="extend-writing" class="exercise-button hidden">Développer davantage</button>
-                            </div>
-                        </div>
-                    </div>
+                    <p id="level-message">Niveau 1 - 45/100 XP</p>
                 </div>
+                <button id="claim-reward" class="reward-button">Continuer</button>
             </div>
         </div>
     </div>
-    
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Odyssée IA - Application d'apprentissage assisté par IA</p>
+        </div>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>

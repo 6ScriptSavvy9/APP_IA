@@ -1,372 +1,647 @@
-// Configuration de l'API Mistral AI
-const MISTRAL_API_KEY = 'S2jQOXPv0fIqghKVvHHqHSv9lCOmIkiY';
-const API_URL = 'https://api.mistral.ai/v1/chat/completions';
+// Configuration de l'application
+const config = {
+    apiKey: 'S2jQOXPv0fIqghKVvHHqHSv9lCOmIkiY', // Remplacez par votre clé API Mistral
+    apiEndpoint: 'https://api.mistral.ai/v1/chat/completions',
+    xpLevels: [0, 100, 250, 450, 700, 1000, 1500], // XP requis pour chaque niveau
+    questCompletionMessages: [
+        "Excellent travail !",
+        "Mission accomplie !",
+        "Bravo pour cette réussite !",
+        "Objectif atteint avec succès !",
+        "Vous progressez très bien !"
+    ],
+    levelUpMessages: [
+        "Félicitations ! Vous avez atteint le niveau suivant !",
+        "Votre maîtrise de l'IA s'améliore !",
+        "Vos compétences se développent rapidement !",
+        "Vous franchissez une nouvelle étape dans votre apprentissage !"
+    ]
+};
 
-// Éléments du DOM
-document.addEventListener('DOMContentLoaded', function() {
-    // Éléments pour le chat
-    const chatMessages = document.getElementById('chat-messages');
-    const userInput = document.getElementById('user-input');
-    const sendButton = document.getElementById('send-button');
+// État de l'utilisateur
+const userState = {
+    xp: 0,
+    level: 1,
+    completedQuests: [],
+    activeQuests: [],
+    questProgress: {}
+};
+
+// Chargement de l'état depuis le stockage local
+function loadUserState() {
+    const savedState = localStorage.getItem('iaAppUserState');
+    if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        Object.assign(userState, parsedState);
+        updateUserStats();
+        updateQuestCards();
+    }
+}
+
+// Sauvegarde de l'état dans le stockage local
+function saveUserState() {
+    localStorage.setItem('iaAppUserState', JSON.stringify(userState));
+}
+
+// Mise à jour de l'affichage des statistiques utilisateur
+function updateUserStats() {
+    document.getElementById('user-level').textContent = `Niveau ${userState.level}`;
+    document.getElementById('user-xp').textContent = `${userState.xp} XP`;
     
-    // Éléments pour les onglets
+    // Calcul du pourcentage de progression vers le niveau suivant
+    const currentLevelXP = config.xpLevels[userState.level - 1];
+    const nextLevelXP = config.xpLevels[userState.level];
+    const xpForNextLevel = nextLevelXP - currentLevelXP;
+    const xpProgress = userState.xp - currentLevelXP;
+    const progressPercentage = Math.min(Math.floor((xpProgress / xpForNextLevel) * 100), 100);
+    
+    // Mise à jour de la barre de progression
+    document.getElementById('xp-progress').style.width = `${progressPercentage}%`;
+    document.getElementById('progress-text').textContent = `${xpProgress}/${xpForNextLevel} XP`;
+}
+
+// Ajout d'XP à l'utilisateur
+function addXP(amount) {
+    userState.xp += amount;
+    
+    // Vérification du passage au niveau supérieur
+    const currentLevel = userState.level;
+    let newLevel = currentLevel;
+    
+    // Tant que l'utilisateur a suffisamment d'XP pour passer au niveau suivant
+    while (newLevel < config.xpLevels.length - 1 && userState.xp >= config.xpLevels[newLevel]) {
+        newLevel++;
+    }
+    
+    // Si l'utilisateur a changé de niveau
+    if (newLevel > currentLevel) {
+        userState.level = newLevel;
+        setTimeout(() => {
+            showLevelUpNotification(newLevel);
+        }, 1000);
+    }
+    
+    updateUserStats();
+    saveUserState();
+    
+    return newLevel > currentLevel; // Indique si l'utilisateur a monté de niveau
+}
+
+// Affichage de la notification de passage de niveau
+function showLevelUpNotification(newLevel) {
+    const notification = document.createElement('div');
+    notification.className = 'level-up-notification';
+    notification.innerHTML = `
+        <div class="notification-icon">
+            <i class="fas fa-level-up-alt"></i>
+        </div>
+        <div class="notification-content">
+            <h3>Niveau ${newLevel} atteint !</h3>
+            <p>${config.levelUpMessages[Math.floor(Math.random() * config.levelUpMessages.length)]}</p>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animation d'entrée
+    setTimeout(() => {
+        notification.classList.add('active');
+    }, 100);
+    
+    // Suppression après un délai
+    setTimeout(() => {
+        notification.classList.remove('active');
+        setTimeout(() => {
+            notification.remove();
+        }, 500);
+    }, 4000);
+    
+    // Mise à jour des quêtes débloquées
+    updateQuestCards();
+}
+
+// Gestion des quêtes
+const quests = {
+    quest1: {
+        id: 'quest1',
+        name: 'Premier Contact',
+        description: 'Présentez-vous à l\'IA et posez-lui 3 questions différentes sur l\'intelligence artificielle.',
+        xpReward: 20,
+        minLevel: 1,
+        objectives: {
+            'quest1-obj1': {
+                id: 'quest1-obj1',
+                name: 'Présentation personnelle',
+                validate: (message) => message.toLowerCase().includes('je m\'appelle') || 
+                                       message.toLowerCase().includes('je suis') || 
+                                       message.toLowerCase().includes('mon nom') || 
+                                       message.toLowerCase().includes('bonjour')
+            },
+            'quest1-obj2': {
+                id: 'quest1-obj2',
+                name: 'Poser 3 questions sur l\'IA',
+                count: 3,
+                validate: (message) => message.toLowerCase().includes('?') && 
+                                      (message.toLowerCase().includes('intelligence artificielle') ||
+                                       message.toLowerCase().includes('ia'))
+            }
+        }
+    },
+    quest2: {
+        id: 'quest2',
+        name: 'Poète en herbe',
+        description: 'Demandez à l\'IA de créer un poème sur un sujet de votre choix, puis modifiez-le en suggérant des changements.',
+        xpReward: 25,
+        minLevel: 1,
+        objectives: {
+            'quest2-obj1': {
+                id: 'quest2-obj1',
+                name: 'Demander un poème',
+                validate: (message) => message.toLowerCase().includes('poème') || 
+                                       message.toLowerCase().includes('poésie') || 
+                                       message.toLowerCase().includes('vers')
+            },
+            'quest2-obj2': {
+                id: 'quest2-obj2',
+                name: 'Suggérer des modifications',
+                validate: (message, previousMessages) => {
+                    // Vérifie si un poème a été généré précédemment
+                    const poemGenerated = previousMessages.some(msg => 
+                        !msg.isUser && (msg.content.toLowerCase().includes('voici un poème') || 
+                                        msg.content.includes('\n\n') || 
+                                        msg.content.includes('vers'))
+                    );
+                    
+                    return poemGenerated && (
+                        message.toLowerCase().includes('modifi') || 
+                        message.toLowerCase().includes('chang') || 
+                        message.toLowerCase().includes('améliore') || 
+                        message.toLowerCase().includes('ajuste')
+                    );
+                }
+            }
+        }
+    },
+    quest3: {
+        id: 'quest3',
+        name: 'Apprenti Professeur',
+        description: 'Demandez à l\'IA d\'expliquer un concept complexe, puis reformulez l\'explication avec vos propres mots.',
+        xpReward: 40,
+        minLevel: 2,
+        objectives: {
+            'quest3-obj1': {
+                id: 'quest3-obj1',
+                name: 'Demander l\'explication d\'un concept complexe',
+                validate: (message) => message.toLowerCase().includes('explique') || 
+                                       message.toLowerCase().includes('expliquer') || 
+                                       message.toLowerCase().includes('qu\'est-ce')
+            },
+            'quest3-obj2': {
+                id: 'quest3-obj2',
+                name: 'Reformuler avec vos propres mots',
+                validate: (message, previousMessages) => {
+                    const explanation = previousMessages.findIndex(msg => 
+                        !msg.isUser && msg.content.length > 200
+                    );
+                    
+                    return explanation !== -1 && (
+                        message.toLowerCase().includes('si je comprends bien') || 
+                        message.toLowerCase().includes('donc') || 
+                        message.toLowerCase().includes('en d\'autres termes') || 
+                        message.toLowerCase().includes('si je résume') || 
+                        message.toLowerCase().includes('reformul')
+                    );
+                }
+            }
+        }
+    },
+    quest4: {
+        id: 'quest4',
+        name: 'Maître des prompts',
+        description: 'Utilisez l\'atelier de prompt engineering pour créer et tester 3 prompts de différentes complexités.',
+        xpReward: 50,
+        minLevel: 2,
+        objectives: {}
+    },
+    quest5: {
+        id: 'quest5',
+        name: 'Débat philosophique',
+        description: 'Engagez un débat philosophique avec l\'IA sur la conscience artificielle et les implications éthiques.',
+        xpReward: 75,
+        minLevel: 3,
+        objectives: {}
+    },
+    quest6: {
+        id: 'quest6',
+        name: 'Écrivain collaboratif',
+        description: 'Créez une histoire complète en collaboration avec l\'IA, en alternant les paragraphes avec elle.',
+        xpReward: 100,
+        minLevel: 4,
+        objectives: {}
+    }
+};
+
+// Mise à jour de l'affichage des cartes de quêtes
+function updateQuestCards() {
+    const questCards = document.querySelectorAll('.quest-card');
+    
+    questCards.forEach(card => {
+        const questId = card.dataset.id;
+        const quest = quests[questId];
+        
+        // Vérification si la quête est déjà complétée
+        if (userState.completedQuests.includes(questId)) {
+            card.dataset.status = 'completed';
+            card.querySelector('.quest-status i').className = 'fas fa-check-circle';
+            card.querySelector('.quest-button').className = 'quest-button completed';
+            card.querySelector('.quest-button').innerText = 'Complété';
+            card.querySelector('.quest-button').disabled = true;
+        } 
+        // Vérification si la quête est active
+        else if (userState.activeQuests.includes(questId)) {
+            card.dataset.status = 'in-progress';
+            card.querySelector('.quest-button').className = 'quest-button in-progress';
+            card.querySelector('.quest-button').innerText = 'En cours';
+            
+            // Mise à jour des objectifs
+            if (card.querySelectorAll('.objective').length > 0) {
+                const objectives = quest.objectives;
+                for (const objId in objectives) {
+                    if (userState.questProgress[questId] && userState.questProgress[questId][objId]) {
+                        const objElement = card.querySelector(`.objective[data-id="${objId}"]`);
+                        if (objElement) {
+                            objElement.classList.add('completed');
+                            objElement.querySelector('i').className = 'fas fa-check-circle';
+                        }
+                    }
+                }
+            }
+        } 
+        // Vérification si la quête est disponible (niveau requis atteint)
+        else if (userState.level >= quest.minLevel) {
+            card.dataset.status = 'available';
+            card.querySelector('.quest-status i').className = 'fas fa-lock-open';
+            card.querySelector('.quest-button').className = 'quest-button start-quest';
+            card.querySelector('.quest-button').innerText = 'Commencer';
+            card.querySelector('.quest-button').disabled = false;
+        } 
+        // Quête verrouillée (niveau insuffisant)
+        else {
+            card.dataset.status = 'locked';
+            card.querySelector('.quest-status i').className = 'fas fa-lock';
+            card.querySelector('.quest-button').className = 'quest-button locked';
+            card.querySelector('.quest-button').innerText = 'Verrouillé';
+            card.querySelector('.quest-button').disabled = true;
+        }
+    });
+}
+
+// Démarrage d'une quête
+function startQuest(questId) {
+    if (!userState.activeQuests.includes(questId) && !userState.completedQuests.includes(questId)) {
+        userState.activeQuests.push(questId);
+        userState.questProgress[questId] = {};
+        
+        saveUserState();
+        updateQuestCards();
+        
+        // Changement vers l'onglet de chat
+        document.querySelector('.tab-button[data-tab="chat"]').click();
+        
+        // Ajout d'un message système pour indiquer le démarrage de la quête
+        const quest = quests[questId];
+        addSystemMessage(`Quête démarrée: "${quest.name}". ${quest.description}`);
+    }
+}
+
+// Validation des objectifs de quête
+function checkQuestObjectives(message, allMessages) {
+    const activeQuests = userState.activeQuests;
+    let questUpdated = false;
+    
+    for (const questId of activeQuests) {
+        const quest = quests[questId];
+        const objectives = quest.objectives;
+        
+        for (const objId in objectives) {
+            const objective = objectives[objId];
+            
+            // Vérifier si l'objectif est déjà complété
+            if (userState.questProgress[questId] && userState.questProgress[questId][objId]) {
+                continue;
+            }
+            
+            // Valider l'objectif
+            let isValid = false;
+            if (objective.count) {
+                // Objectif avec compteur
+                if (!userState.questProgress[questId]) {
+                    userState.questProgress[questId] = {};
+                }
+                
+                if (!userState.questProgress[questId][objId]) {
+                    userState.questProgress[questId][objId] = { count: 0 };
+                }
+                
+                if (objective.validate(message, allMessages)) {
+                    userState.questProgress[questId][objId].count++;
+                    if (userState.questProgress[questId][objId].count >= objective.count) {
+                        userState.questProgress[questId][objId] = true;
+                        questUpdated = true;
+                    }
+                }
+            } else {
+                // Objectif simple
+                if (objective.validate(message, allMessages)) {
+                    if (!userState.questProgress[questId]) {
+                        userState.questProgress[questId] = {};
+                    }
+                    userState.questProgress[questId][objId] = true;
+                    questUpdated = true;
+                }
+            }
+        }
+        
+        // Vérifier si tous les objectifs sont complétés
+        if (userState.questProgress[questId]) {
+            const allCompleted = Object.keys(objectives).every(objId => 
+                userState.questProgress[questId][objId] === true
+            );
+            
+            if (allCompleted && !userState.completedQuests.includes(questId)) {
+                completeQuest(questId);
+            }
+        }
+    }
+    
+    if (questUpdated) {
+        saveUserState();
+        updateQuestCards();
+    }
+}
+
+// Complétion d'une quête
+function completeQuest(questId) {
+    const index = userState.activeQuests.indexOf(questId);
+    if (index !== -1) {
+        userState.activeQuests.splice(index, 1);
+    }
+    
+    userState.completedQuests.push(questId);
+    saveUserState();
+    
+    const quest = quests[questId];
+    const leveledUp = addXP(quest.xpReward);
+    
+    // Affichage du popup de récompense
+    showRewardPopup(quest, leveledUp);
+}
+
+// Affichage du popup de récompense
+function showRewardPopup(quest, leveledUp) {
+    const popup = document.getElementById('reward-popup');
+    const rewardMessage = document.getElementById('reward-message');
+    const xpAmount = document.getElementById('xp-amount');
+    const progressFill = document.getElementById('popup-progress');
+    const levelMessage = document.getElementById('level-message');
+    
+    // Mise à jour du contenu du popup
+    rewardMessage.textContent = `Vous avez terminé la quête "${quest.name}".`;
+    xpAmount.textContent = `+${quest.xpReward} XP`;
+    
+    // Calcul de la progression
+    const currentLevelXP = config.xpLevels[userState.level - 1];
+    const nextLevelXP = config.xpLevels[userState.level];
+    const xpForNextLevel = nextLevelXP - currentLevelXP;
+    const xpProgress = userState.xp - currentLevelXP;
+    const progressPercentage = Math.min(Math.floor((xpProgress / xpForNextLevel) * 100), 100);
+    
+    progressFill.style.width = `${progressPercentage}%`;
+    levelMessage.textContent = `Niveau ${userState.level} - ${xpProgress}/${xpForNextLevel} XP`;
+    
+    // Affichage du popup
+    popup.classList.add('active');
+    setTimeout(() => {
+        popup.querySelector('.popup-content').style.opacity = '1';
+        popup.querySelector('.popup-content').style.transform = 'translateY(0)';
+    }, 100);
+    
+    // Mise à jour de l'affichage des quêtes
+    updateQuestCards();
+}
+
+// Initialisation des événements
+document.addEventListener('DOMContentLoaded', function() {
+    // Chargement de l'état de l'utilisateur
+    loadUserState();
+    
+    // Gestion des onglets
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabPanes = document.querySelectorAll('.tab-pane');
     
-    // Éléments pour les démonstrations
-    const demoCards = document.querySelectorAll('.demo-card');
-    
-    // Éléments pour les ateliers
-    const workshopSelect = document.getElementById('workshop-select');
-    const workshopContents = document.querySelectorAll('.workshop-content');
-    
-    // Éléments pour l'atelier de prompt engineering
-    const evaluatePromptBtn = document.getElementById('evaluate-prompt');
-    const promptExercise = document.getElementById('prompt-exercise');
-    const promptFeedback = document.getElementById('prompt-feedback');
-    const customPrompt = document.getElementById('custom-prompt');
-    const tryPromptBtn = document.getElementById('try-prompt');
-    const promptResult = document.getElementById('prompt-result');
-    
-    // Éléments pour l'atelier de description d'images
-    const changeImageBtn = document.getElementById('change-image');
-    const sampleImage = document.getElementById('sample-image');
-    const imageDescription = document.getElementById('image-description');
-    const generateSimilarBtn = document.getElementById('generate-similar');
-    const imageResult = document.getElementById('image-result');
-    
-    // Éléments pour l'atelier d'analyse de sentiment
-    const sentimentText = document.getElementById('sentiment-text');
-    const analyzeSentimentBtn = document.getElementById('analyze-sentiment');
-    const sentimentResult = document.getElementById('sentiment-result');
-    
-    // Éléments pour l'atelier d'écriture créative
-    const writingType = document.getElementById('writing-type');
-    const writingGenre = document.getElementById('writing-genre');
-    const writingStart = document.getElementById('writing-start');
-    const continueWritingBtn = document.getElementById('continue-writing');
-    const writingResult = document.getElementById('writing-result');
-    const extendWritingBtn = document.getElementById('extend-writing');
-    
-    // Gestion des onglets
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Retirer la classe active de tous les onglets
+            const tabId = button.getAttribute('data-tab');
+            
+            // Désactivation de tous les onglets
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabPanes.forEach(pane => pane.classList.remove('active'));
             
-            // Activer l'onglet cliqué
+            // Activation de l'onglet cliqué
             button.classList.add('active');
-            const tabId = button.getAttribute('data-tab');
             document.getElementById(`${tabId}-tab`).classList.add('active');
         });
     });
     
-    // Gestion des cartes de démo
-    demoCards.forEach(card => {
-        const tryButton = card.querySelector('.try-button');
-        tryButton.addEventListener('click', () => {
-            // Récupérer le prompt d'exemple
-            const examplePrompt = card.getAttribute('data-prompt');
+    // Gestion du bouton d'envoi de message
+    const sendButton = document.getElementById('send-button');
+    const userInput = document.getElementById('user-input');
+    const chatMessages = document.getElementById('chat-messages');
+    
+    const messages = [];
+    
+    sendButton.addEventListener('click', async () => {
+        const message = userInput.value.trim();
+        if (message) {
+            // Ajout du message de l'utilisateur
+            const userMessage = {
+                content: message,
+                isUser: true
+            };
+            messages.push(userMessage);
             
-            // Basculer vers l'onglet de chat
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabPanes.forEach(pane => pane.classList.remove('active'));
+            // Affichage du message
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message user-message';
+            messageElement.textContent = message;
+            chatMessages.appendChild(messageElement);
             
-            // Activer l'onglet de chat
-            tabButtons[0].classList.add('active');
-            document.getElementById('chat-tab').classList.add('active');
+            // Vérification des objectifs de quête
+            checkQuestObjectives(message, messages);
             
-            // Remplir le champ de saisie avec l'exemple
-            userInput.value = examplePrompt;
+            // Réinitialisation de l'input
+            userInput.value = '';
             
-            // Mettre le focus sur le champ de saisie
-            userInput.focus();
+            // Affichage du message de chargement
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'message ai-message loading';
+            loadingElement.textContent = '...';
+            chatMessages.appendChild(loadingElement);
             
-            // Faire défiler pour voir le bouton d'envoi
-            setTimeout(() => {
-                userInput.scrollIntoView({ behavior: 'smooth' });
-            }, 300);
-        });
+            // Défilement vers le bas
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            try {
+                // Appel à l'API Mistral AI
+                const aiResponse = await callMistralAPI(messages);
+                
+                // Suppression du message de chargement
+                loadingElement.remove();
+                
+                const aiMessage = {
+                    content: aiResponse,
+                    isUser: false
+                };
+                messages.push(aiMessage);
+                
+                // Affichage de la réponse
+                const responseElement = document.createElement('div');
+                responseElement.className = 'message ai-message';
+                responseElement.textContent = aiResponse;
+                chatMessages.appendChild(responseElement);
+                
+                // Défilement vers le bas
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                // Suppression du message de chargement
+                loadingElement.remove();
+                
+                // Affichage du message d'erreur
+                const errorElement = document.createElement('div');
+                errorElement.className = 'message system-message error';
+                errorElement.textContent = "Une erreur s'est produite lors de la communication avec l'API Mistral. Veuillez réessayer plus tard.";
+                chatMessages.appendChild(errorElement);
+                
+                console.error('Erreur API:', error);
+                
+                // Défilement vers le bas
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
     });
     
-    // Gestion de la sélection d'atelier
-    if (workshopSelect) {
-        workshopSelect.addEventListener('change', () => {
-            const selectedWorkshop = workshopSelect.value;
-            
-            // Cacher tous les ateliers
-            workshopContents.forEach(workshop => {
-                workshop.classList.remove('active');
-            });
-            
-            // Afficher l'atelier sélectionné
-            document.getElementById(`${selectedWorkshop}-workshop`).classList.add('active');
-        });
-    }
-    
-    // Fonctionnalités pour l'atelier de prompt engineering
-    if (evaluatePromptBtn) {
-        evaluatePromptBtn.addEventListener('click', async () => {
-            const prompt = promptExercise.value.trim();
-            if (!prompt) return;
-            
-            promptFeedback.innerHTML = '<p>Évaluation en cours...</p>';
-            promptFeedback.style.display = 'block';
-            
-            try {
-                const response = await callMistralAPI([
-                    { role: 'system', content: 'Vous êtes un expert en prompt engineering. Évaluez la qualité du prompt fourni et suggérez des améliorations pour le rendre plus efficace. Votre réponse doit être concise et structurée.' },
-                    { role: 'user', content: `Évaluez ce prompt et suggérez des améliorations: "${prompt}"` }
-                ]);
-                
-                promptFeedback.innerHTML = `<p>${response.replace(/\n/g, '<br>')}</p>`;
-                promptFeedback.classList.add('active');
-            } catch (error) {
-                promptFeedback.innerHTML = `<p>Erreur: ${error.message}</p>`;
-            }
-        });
-    }
-    
-    if (tryPromptBtn) {
-        tryPromptBtn.addEventListener('click', async () => {
-            const prompt = customPrompt.value.trim();
-            if (!prompt) return;
-            
-            promptResult.innerHTML = '<p>Génération de la réponse...</p>';
-            promptResult.style.display = 'block';
-            
-            try {
-                const response = await callMistralAPI([
-                    { role: 'system', content: 'Vous êtes un assistant IA neutre qui répond aux questions des utilisateurs sans biais ni orientation idéologique.' },
-                    { role: 'user', content: prompt }
-                ]);
-                
-                promptResult.innerHTML = `<p>${response.replace(/\n/g, '<br>')}</p>`;
-                promptResult.classList.add('active');
-            } catch (error) {
-                promptResult.innerHTML = `<p>Erreur: ${error.message}</p>`;
-            }
-        });
-    }
-    
-    // Fonctionnalités pour l'atelier de description d'images
-    const imageSamples = [
-        'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1',
-        'https://images.unsplash.com/photo-1551524559-8af4e6624178',
-        'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-        'https://images.unsplash.com/photo-1577023311546-cdc07a8454d9',
-        'https://images.unsplash.com/photo-1560472354-b33ff0c44a43'
-    ];
-    
-    let currentImageIndex = 0;
-    
-    if (changeImageBtn && sampleImage) {
-        // Initialiser avec la première image
-        sampleImage.src = `${imageSamples[0]}?w=400&h=300&auto=format&fit=crop`;
-        
-        changeImageBtn.addEventListener('click', () => {
-            currentImageIndex = (currentImageIndex + 1) % imageSamples.length;
-            sampleImage.src = `${imageSamples[currentImageIndex]}?w=400&h=300&auto=format&fit=crop`;
-        });
-    }
-    
-    if (generateSimilarBtn) {
-        generateSimilarBtn.addEventListener('click', async () => {
-            const description = imageDescription.value.trim();
-            if (!description) return;
-            
-            imageResult.innerHTML = '<p>Génération en cours...</p>';
-            imageResult.style.display = 'block';
-            
-            try {
-                const response = await callMistralAPI([
-                    { role: 'system', content: 'Vous êtes un assistant IA spécialisé dans la génération de descriptions d\'images similaires. Analysez la description fournie et créez une description légèrement différente mais dans le même style et avec le même sujet.' },
-                    { role: 'user', content: `Voici ma description d'une image: "${description}". Générez une description similaire mais différente qui pourrait donner un résultat comparable.` }
-                ]);
-                
-                imageResult.innerHTML = `<p><strong>Description similaire:</strong><br>${response.replace(/\n/g, '<br>')}</p>`;
-                imageResult.classList.add('active');
-            } catch (error) {
-                imageResult.innerHTML = `<p>Erreur: ${error.message}</p>`;
-            }
-        });
-    }
-    
-    // Fonctionnalités pour l'atelier d'analyse de sentiment
-    if (analyzeSentimentBtn) {
-        analyzeSentimentBtn.addEventListener('click', async () => {
-            const text = sentimentText.value.trim();
-            if (!text) return;
-            
-            sentimentResult.innerHTML = '<p>Analyse en cours...</p>';
-            sentimentResult.style.display = 'block';
-            
-            try {
-                const response = await callMistralAPI([
-                    { role: 'system', content: 'Vous êtes un assistant IA spécialisé dans l\'analyse de sentiment de texte. Analysez le texte fourni et donnez un résultat détaillé sur le sentiment (positif, négatif, neutre), l\'émotion dominante, et le ton.' },
-                    { role: 'user', content: `Analysez le sentiment de ce texte: "${text}"` }
-                ]);
-                
-                sentimentResult.innerHTML = `<p>${response.replace(/\n/g, '<br>')}</p>`;
-                sentimentResult.classList.add('active');
-            } catch (error) {
-                sentimentResult.innerHTML = `<p>Erreur: ${error.message}</p>`;
-            }
-        });
-    }
-    
-    // Fonctionnalités pour l'atelier d'écriture créative
-    if (continueWritingBtn) {
-        continueWritingBtn.addEventListener('click', async () => {
-            const text = writingStart.value.trim();
-            const type = writingType.value;
-            const genre = writingGenre.value;
-            
-            if (!text) return;
-            
-            writingResult.innerHTML = '<p>Génération en cours...</p>';
-            writingResult.style.display = 'block';
-            extendWritingBtn.classList.add('hidden');
-            
-            try {
-                const response = await callMistralAPI([
-                    { role: 'system', content: 'Vous êtes un assistant IA spécialisé dans l\'écriture créative. Continuez le texte fourni dans le style et le genre spécifiés.' },
-                    { role: 'user', content: `Continuez ce texte (type: ${type}, genre: ${genre}): "${text}"` }
-                ]);
-                
-                writingResult.innerHTML = `<p>${response.replace(/\n/g, '<br>')}</p>`;
-                writingResult.classList.add('active');
-                extendWritingBtn.classList.remove('hidden');
-                
-                // Stocker le texte complet pour l'extension
-                writingResult.setAttribute('data-full-text', text + ' ' + response);
-            } catch (error) {
-                writingResult.innerHTML = `<p>Erreur: ${error.message}</p>`;
-            }
-        });
-    }
-    
-    if (extendWritingBtn) {
-        extendWritingBtn.addEventListener('click', async () => {
-            const fullText = writingResult.getAttribute('data-full-text');
-            const type = writingType.value;
-            const genre = writingGenre.value;
-            
-            if (!fullText) return;
-            
-            writingResult.innerHTML = '<p>Développement en cours...</p>';
-            
-            try {
-                const response = await callMistralAPI([
-                    { role: 'system', content: 'Vous êtes un assistant IA spécialisé dans l\'écriture créative. Continuez le texte fourni dans le style et le genre spécifiés.' },
-                    { role: 'user', content: `Continuez ce texte (type: ${type}, genre: ${genre}): "${fullText}"` }
-                ]);
-                
-                const newFullText = fullText + ' ' + response;
-                writingResult.innerHTML = `<p>${newFullText.replace(/\n/g, '<br>')}</p>`;
-                writingResult.setAttribute('data-full-text', newFullText);
-            } catch (error) {
-                writingResult.innerHTML = `<p>Erreur: ${error.message}</p>`;
-            }
-        });
-    }
-    
-    // Gestion de l'envoi via le bouton ou la touche Entrée pour le chat
-    sendButton.addEventListener('click', sendMessage);
-    userInput.addEventListener('keydown', (e) => {
+    // Gestion de la touche Entrée pour envoyer un message
+    userInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            sendMessage();
+            sendButton.click();
         }
     });
     
-    // Ajouter un message de bienvenue
-    addMessage('Bonjour ! Je suis un assistant IA propulsé par Mistral AI. Comment puis-je vous aider aujourd\'hui ?', 'ai');
+    // Gestion des filtres de quêtes
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const filter = button.getAttribute('data-filter');
+            
+            // Désactivation de tous les filtres
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Activation du filtre cliqué
+            button.classList.add('active');
+            
+            // Filtrage des quêtes
+            const questCards = document.querySelectorAll('.quest-card');
+            questCards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                } else if (filter === 'completed' && card.dataset.status === 'completed') {
+                    card.style.display = 'block';
+                } else if (filter === card.dataset.difficulty && card.dataset.status !== 'completed') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
     
-    // Fonction pour envoyer un message à l'API
-    async function sendMessage() {
-        const message = userInput.value.trim();
-        if (!message) return;
+    // Gestion des boutons de quête
+    const questButtons = document.querySelectorAll('.quest-button.start-quest');
+    questButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const questId = button.getAttribute('data-quest');
+            startQuest(questId);
+        });
+    });
+    
+    // Gestion du bouton de récompense
+    const claimRewardButton = document.getElementById('claim-reward');
+    claimRewardButton.addEventListener('click', () => {
+        const popup = document.getElementById('reward-popup');
+        popup.classList.remove('active');
+        setTimeout(() => {
+            popup.querySelector('.popup-content').style.opacity = '0';
+            popup.querySelector('.popup-content').style.transform = 'translateY(20px)';
+        }, 100);
+    });
+    
+    // Fonction pour ajouter un message système
+    function addSystemMessage(message) {
+        const systemMessage = {
+            content: message,
+            isUser: false,
+            isSystem: true
+        };
+        messages.push(systemMessage);
         
-        // Afficher le message de l'utilisateur
-        addMessage(message, 'user');
-        userInput.value = '';
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message system-message';
+        messageElement.textContent = message;
+        chatMessages.appendChild(messageElement);
         
-        // Ajouter un indicateur de chargement
-        const loadingId = showLoadingIndicator();
-        
-        try {
-            const aiResponse = await callMistralAPI([
-                { role: 'system', content: 'Vous êtes un assistant IA neutre qui répond aux questions des utilisateurs sans biais ni orientation idéologique.' },
-                { role: 'user', content: message }
-            ]);
-            
-            // Retirer l'indicateur de chargement
-            hideLoadingIndicator(loadingId);
-            
-            // Afficher la réponse de l'IA
-            addMessage(aiResponse, 'ai');
-            
-        } catch (error) {
-            // Gérer les erreurs
-            hideLoadingIndicator(loadingId);
-            console.error('Erreur lors de la communication avec l\'API:', error);
-            addMessage('Désolé, une erreur s\'est produite lors de la communication avec l\'API. Veuillez réessayer.', 'ai');
-        }
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-    
-    // Fonction pour appeler l'API Mistral
-    async function callMistralAPI(messages) {
-        const response = await fetch(API_URL, {
+});
+
+// Fonction pour remplacer par l'API Mistral AI
+async function callMistralAPI(messages) {
+    try {
+        // Préparation des messages pour l'API
+        const formattedMessages = messages.map(msg => ({
+            role: msg.isUser ? 'user' : 'assistant',
+            content: msg.content
+        }));
+        
+        // Ajout d'un message système initial pour définir le comportement et la langue
+        const systemMessage = {
+            role: 'system',
+            content: 'Vous êtes un assistant IA dans une application éducative gamifiée appelée Odyssée IA. Répondez toujours en français de manière claire, précise et amicale. Adaptez votre style pour être accessible et encourageant, en particulier pour les débutants qui apprennent l\'intelligence artificielle. N\'utilisez jamais l\'anglais dans vos réponses.'
+        };
+        
+        const response = await fetch(config.apiEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${MISTRAL_API_KEY}`
+                'Authorization': `Bearer ${config.apiKey}`
             },
             body: JSON.stringify({
-                model: 'mistral-tiny',
-                messages: messages,
-                temperature: 0.7
+                model: 'mistral-medium',
+                messages: [systemMessage, ...formattedMessages],
+                temperature: 0.7,
+                max_tokens: 1000
             })
         });
         
-        if (!response.ok) {
-            throw new Error(`Erreur API: ${response.status}`);
-        }
-        
         const data = await response.json();
-        return data.choices[0].message.content;
-    }
-    
-    // Fonction pour ajouter un message au chat
-    function addMessage(text, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', `${sender}-message`);
         
-        // Formater le texte avec gestion des sauts de ligne
-        messageDiv.textContent = text;
-        
-        chatMessages.appendChild(messageDiv);
-        
-        // Faire défiler vers le bas pour voir le nouveau message
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-    
-    // Fonctions pour gérer l'indicateur de chargement
-    function showLoadingIndicator() {
-        const loadingDiv = document.createElement('div');
-        loadingDiv.classList.add('message', 'ai-message', 'loading');
-        loadingDiv.textContent = 'L\'IA réfléchit...';
-        chatMessages.appendChild(loadingDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        return Date.now(); // Utiliser un timestamp comme ID
-    }
-    
-    function hideLoadingIndicator(id) {
-        const loadingElements = chatMessages.querySelectorAll('.loading');
-        if (loadingElements.length > 0) {
-            loadingElements[loadingElements.length - 1].remove();
+        if (!response.ok) {
+            throw new Error(`Erreur API: ${data.error?.message || 'Une erreur inconnue s\'est produite'}`);
         }
+        
+        return data.choices[0].message.content;
+    } catch (error) {
+        console.error('Erreur lors de l\'appel à l\'API Mistral:', error);
+        return "Je suis désolé, je rencontre des difficultés à traiter votre demande actuellement. Veuillez réessayer.";
     }
-});
+}
