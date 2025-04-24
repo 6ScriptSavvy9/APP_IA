@@ -36,14 +36,152 @@ function initializeApp() {
 
 // Chargement des données utilisateur (simulé)
 function loadUserData() {
-    // Dans une application réelle, ces données seraient chargées depuis un serveur
-    userLevel = 5;
-    userXP = 2340;
-    xpToNextLevel = 5000;
+    // Dans une application réelle, ces données seraient chargées depuis un serveur ou localStorage
+    const savedUsername = localStorage.getItem('username') || 'Explorateur IA';
+    const showAnimations = localStorage.getItem('showAnimations') !== 'false'; // Par défaut true
+    const soundEffects = localStorage.getItem('soundEffects') !== 'false'; // Par défaut true
+    
+    userLevel = parseInt(localStorage.getItem('userLevel') || '5');
+    userXP = parseInt(localStorage.getItem('userXP') || '2340');
+    xpToNextLevel = parseInt(localStorage.getItem('xpToNextLevel') || '5000');
+    
+    // Remplir les champs du formulaire de profil
+    const usernameInput = document.getElementById('username');
+    if (usernameInput) {
+        usernameInput.value = savedUsername;
+    }
+    
+    // Mettre à jour le nom d'utilisateur dans l'affichage du profil
+    const profileName = document.querySelector('.profile-info h3');
+    if (profileName) {
+        profileName.textContent = savedUsername;
+    }
+    
+    // Définir les options d'animations et de sons
+    const showAnimationsCheckbox = document.getElementById('show-animations');
+    if (showAnimationsCheckbox) {
+        showAnimationsCheckbox.checked = showAnimations;
+    }
+    
+    const soundEffectsCheckbox = document.getElementById('sound-effects');
+    if (soundEffectsCheckbox) {
+        soundEffectsCheckbox.checked = soundEffects;
+    }
     
     // Mettre à jour l'interface avec les données utilisateur
     updateUserLevel();
     updateLevelProgress();
+    updateProfileStats();
+}
+
+// Mise à jour des statistiques dans l'onglet profil
+function updateProfileStats() {
+    // Mettre à jour l'XP totale
+    const profileXP = document.getElementById('profile-xp');
+    if (profileXP) {
+        profileXP.textContent = userXP;
+    }
+    
+    // Mettre à jour le nombre de quêtes complétées
+    const profileQuests = document.getElementById('profile-quests');
+    if (profileQuests) {
+        const completedQuestsCount = quests.filter(quest => quest.status === 'completed').length;
+        profileQuests.textContent = completedQuestsCount;
+    }
+    
+    // Mettre à jour le nombre de messages
+    const profileMessages = document.getElementById('profile-messages');
+    if (profileMessages) {
+        profileMessages.textContent = chatHistory.length;
+    }
+    
+    // Mettre à jour le niveau
+    const profileLevel = document.getElementById('profile-level');
+    if (profileLevel) {
+        profileLevel.textContent = userLevel;
+    }
+    
+    // Mettre à jour la barre de progression
+    const profileProgress = document.getElementById('profile-progress');
+    const profileXPProgress = document.getElementById('profile-xp-progress');
+    if (profileProgress && profileXPProgress) {
+        const progressPercentage = (userXP / xpToNextLevel) * 100;
+        profileProgress.style.width = `${progressPercentage}%`;
+        profileXPProgress.textContent = `${userXP}/${xpToNextLevel}`;
+    }
+    
+    // Mettre à jour les succès débloqués
+    updateAchievements();
+}
+
+// Mise à jour des succès débloqués
+function updateAchievements() {
+    // Dans une application réelle, cette fonction vérifierait les conditions de chaque succès
+    // et les débloquerait si nécessaire
+    
+    // Exemple de déblocage du succès "Premier contact" si l'utilisateur a envoyé au moins un message
+    if (chatHistory.length > 0) {
+        const firstContactAchievement = document.querySelector('.achievement:nth-child(1)');
+        if (firstContactAchievement) {
+            firstContactAchievement.classList.remove('locked');
+        }
+    }
+    
+    // Exemple de déblocage du succès "Élève appliqué" si l'utilisateur a complété au moins une quête
+    const completedQuestsCount = quests.filter(quest => quest.status === 'completed').length;
+    if (completedQuestsCount > 0) {
+        const studentAchievement = document.querySelector('.achievement:nth-child(2)');
+        if (studentAchievement) {
+            studentAchievement.classList.remove('locked');
+        }
+    }
+    
+    // Exemple de déblocage du succès "Eurêka !" si l'utilisateur est au moins niveau 3
+    if (userLevel >= 3) {
+        const eurekaAchievement = document.querySelector('.achievement:nth-child(3)');
+        if (eurekaAchievement) {
+            eurekaAchievement.classList.remove('locked');
+        }
+    }
+    
+    // Exemple de déblocage du succès "Expérimentateur" si l'utilisateur a utilisé l'atelier de prompts
+    if (workshopHistory.length > 0) {
+        const experimenterAchievement = document.querySelector('.achievement:nth-child(4)');
+        if (experimenterAchievement) {
+            experimenterAchievement.classList.remove('locked');
+        }
+    }
+}
+
+// Fonction pour sauvegarder les paramètres du profil
+function saveProfileSettings() {
+    // Récupérer les valeurs des champs
+    const usernameInput = document.getElementById('username');
+    const showAnimationsCheckbox = document.getElementById('show-animations');
+    const soundEffectsCheckbox = document.getElementById('sound-effects');
+    
+    if (!usernameInput || !showAnimationsCheckbox || !soundEffectsCheckbox) return;
+    
+    // Récupérer et valider le nom d'utilisateur
+    const username = usernameInput.value.trim();
+    if (username === '') {
+        showNotification('Erreur', 'Le nom d\'utilisateur ne peut pas être vide.');
+        return;
+    }
+    
+    // Sauvegarder les paramètres dans localStorage
+    localStorage.setItem('username', username);
+    localStorage.setItem('showAnimations', showAnimationsCheckbox.checked);
+    localStorage.setItem('soundEffects', soundEffectsCheckbox.checked);
+    
+    // Mettre à jour l'interface
+    const profileName = document.querySelector('.profile-info h3');
+    if (profileName) {
+        profileName.textContent = username;
+    }
+    
+    // Montrer une notification de confirmation
+    showNotification('Paramètres sauvegardés', 'Vos préférences ont été mises à jour avec succès.');
 }
 
 // Chargement des quêtes (simulé)
@@ -148,6 +286,24 @@ function setupEventListeners() {
         });
     }
     
+    // Écouteur pour le bouton gomme (effacer la conversation)
+    const clearChatButton = document.getElementById('clear-chat');
+    if (clearChatButton) {
+        clearChatButton.addEventListener('click', clearChat);
+    }
+    
+    // Écouteur pour le bouton réglage
+    const chatSettingsButton = document.getElementById('chat-settings');
+    if (chatSettingsButton) {
+        chatSettingsButton.addEventListener('click', openChatSettings);
+    }
+    
+    // Écouteur pour le bouton microphone (entrée vocale)
+    const voiceInputButton = document.getElementById('voice-input');
+    if (voiceInputButton) {
+        voiceInputButton.addEventListener('click', startVoiceInput);
+    }
+    
     // Écouteurs pour les boutons des quêtes
     document.querySelectorAll('.quest-button').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -175,6 +331,12 @@ function setupEventListeners() {
     const testButton = document.getElementById('test-prompt');
     if (testButton) {
         testButton.addEventListener('click', generateFromPrompt);
+    }
+    
+    // Écouteur pour sauvegarder les paramètres du profil
+    const saveSettingsButton = document.getElementById('save-settings');
+    if (saveSettingsButton) {
+        saveSettingsButton.addEventListener('click', saveProfileSettings);
     }
 }
 
@@ -356,41 +518,141 @@ function sendMessage() {
     }, 1500);
 }
 
-// Générer une réponse de l'IA (simulée)
-function generateAIResponse(userInput) {
-    // Dans une application réelle, cette fonction appellerait une API d'IA
+// Générer une réponse de l'IA (via Mistral API)
+async function generateAIResponse(userInput) {
+    // Afficher un indicateur de chargement pour l'utilisateur
+    const messagesContainer = document.querySelector('.chat-messages');
+    const loadingMessage = {
+        type: 'system',
+        content: 'IA est en train de répondre...'
+    };
+    addMessageToChat(loadingMessage);
+
+    try {
+        // Appeler l'API Mistral
+        const response = await callMistralAPI(userInput);
+        
+        // Supprimer le message de chargement
+        if (messagesContainer) {
+            messagesContainer.removeChild(messagesContainer.lastChild);
+        }
+        
+        // Créer et afficher la réponse de l'IA
+        const aiResponse = {
+            sender: 'IA Assistant',
+            type: 'ai',
+            content: response
+        };
+        
+        // Ajouter la réponse de l'IA au chat
+        addMessageToChat(aiResponse);
+        
+        // Vérifier si le message complète un objectif de quête
+        checkQuestObjectives(userInput);
+    } catch (error) {
+        // Supprimer le message de chargement
+        if (messagesContainer) {
+            messagesContainer.removeChild(messagesContainer.lastChild);
+        }
+        
+        // Afficher un message d'erreur
+        const errorMessage = {
+            type: 'system',
+            content: `Erreur de connexion à l'IA: ${error.message}. Utilisation du mode hors ligne.`
+        };
+        addMessageToChat(errorMessage);
+        
+        // Utiliser le mode hors ligne (réponses prédéfinies) en cas d'erreur
+        useOfflineResponse(userInput);
+    }
+}
+
+// Fonction pour appeler l'API Mistral
+async function callMistralAPI(userInput) {
+    // Votre API key Mistral
+    const apiKey = 'IaHNsJuit3kaGoaBOKAfIhlU0EVTFsWj';
+    
+    // URL de l'API Mistral
+    const apiUrl = 'https://api.mistral.ai/v1/chat/completions';
+    
+    // Préparer les données pour l'API
+    const requestData = {
+        model: "mistral-medium", // Vous pouvez choisir différents modèles selon vos besoins
+        messages: [
+            {
+                role: "system",
+                content: "Vous êtes un assistant IA spécialisé dans le prompt engineering et l'IA générative. Votre objectif est d'aider l'utilisateur à apprendre et à maîtriser ces compétences. Soyez pédagogique, encourageant et donnez des exemples concrets."
+            },
+            {
+                role: "user",
+                content: userInput
+            }
+        ],
+        temperature: 0.7,
+        max_tokens: 800
+    };
+    
+    try {
+        // Faire la requête à l'API
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        // Vérifier si la requête a réussi
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Erreur API (${response.status}): ${errorData.error?.message || 'Erreur inconnue'}`);
+        }
+        
+        // Traiter la réponse
+        const data = await response.json();
+        return data.choices[0].message.content;
+    } catch (error) {
+        console.error("Erreur lors de l'appel à l'API Mistral:", error);
+        throw error;
+    }
+}
+
+// Fonction de fallback pour utiliser des réponses prédéfinies en cas d'erreur
+function useOfflineResponse(userInput) {
+    // Réponses simulées basées sur des mots-clés dans l'entrée utilisateur
     let aiResponse;
     
     // Réponses simulées basées sur des mots-clés dans l'entrée utilisateur
     if (userInput.toLowerCase().includes('bonjour') || userInput.toLowerCase().includes('salut')) {
         aiResponse = {
-            sender: 'IA Assistant',
+            sender: 'IA Assistant (mode hors ligne)',
             type: 'ai',
             content: 'Bonjour ! Je suis ravi de vous aider aujourd\'hui. Quelle est votre question sur l\'IA générative ou le prompt engineering ?'
         };
     } else if (userInput.toLowerCase().includes('prompt') || userInput.toLowerCase().includes('engineering')) {
         aiResponse = {
-            sender: 'IA Assistant',
+            sender: 'IA Assistant (mode hors ligne)',
             type: 'ai',
             content: 'Le prompt engineering est l\'art de formuler des instructions précises pour obtenir les meilleures réponses d\'une IA générative.<br><br>Voici quelques principes clés :<br>1. Soyez spécifique dans vos demandes<br>2. Fournissez du contexte<br>3. Utilisez une structure claire<br>4. Spécifiez le format de sortie souhaité<br><br>Souhaitez-vous un exemple concret ?'
         };
     } else if (userInput.toLowerCase().includes('quête') || userInput.toLowerCase().includes('quest')) {
         aiResponse = {
-            sender: 'IA Assistant',
+            sender: 'IA Assistant (mode hors ligne)',
             type: 'ai',
             content: 'Les quêtes sont conçues pour vous aider à progresser dans votre maîtrise de l\'IA générative. Chaque quête comprend des objectifs à accomplir et vous récompense avec des points d\'expérience.<br><br>Vous pouvez consulter vos quêtes actives dans l\'onglet "Quêtes". Essayez de compléter "Premiers pas avec l\'IA" pour commencer !'
         };
     } else if (userInput.toLowerCase().includes('niveau') || userInput.toLowerCase().includes('xp')) {
         aiResponse = {
-            sender: 'IA Assistant',
+            sender: 'IA Assistant (mode hors ligne)',
             type: 'ai',
             content: `Vous êtes actuellement au niveau ${userLevel} avec ${userXP} points d'expérience. Il vous faut ${xpToNextLevel - userXP} XP supplémentaires pour atteindre le niveau ${userLevel + 1}.<br><br>Vous pouvez gagner de l'XP en complétant des quêtes et en interagissant régulièrement avec moi !`
         };
     } else {
         aiResponse = {
-            sender: 'IA Assistant',
+            sender: 'IA Assistant (mode hors ligne)',
             type: 'ai',
-            content: 'Merci pour votre message. Si vous souhaitez en apprendre davantage sur le prompt engineering ou l\'IA générative, n\'hésitez pas à me poser des questions spécifiques. Je suis là pour vous aider à maîtriser ces compétences !'
+            content: 'Merci pour votre message. Si vous souhaitez en apprendre davantage sur le prompt engineering ou l\'IA générative, n\'hésitez pas à me poser des questions spécifiques. Je suis là pour vous aider à maîtriser ces compétences ! (Mode hors ligne actif)'
         };
     }
     
@@ -867,52 +1129,34 @@ function filterQuests(filter) {
 }
 
 // Afficher une notification
-function showNotification(title, message, iconClass) {
-    // Créer l'élément de notification
+function showNotification(title, message) {
     const notification = document.createElement('div');
-    notification.classList.add('notification');
+    notification.className = 'notification';
     
-    // Créer l'icône
-    const notificationIcon = document.createElement('div');
-    notificationIcon.classList.add('notification-icon');
+    notification.innerHTML = `
+        <div class="notification-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="notification-content">
+            <h3>${title}</h3>
+            <p>${message}</p>
+        </div>
+    `;
     
-    const icon = document.createElement('i');
-    icon.className = iconClass;
-    notificationIcon.appendChild(icon);
-    
-    // Créer le contenu
-    const notificationContent = document.createElement('div');
-    notificationContent.classList.add('notification-content');
-    
-    const notificationTitle = document.createElement('h3');
-    notificationTitle.textContent = title;
-    notificationContent.appendChild(notificationTitle);
-    
-    const notificationMessage = document.createElement('p');
-    notificationMessage.textContent = message;
-    notificationContent.appendChild(notificationMessage);
-    
-    // Assembler la notification
-    notification.appendChild(notificationIcon);
-    notification.appendChild(notificationContent);
-    
-    // Ajouter la notification au document
     document.body.appendChild(notification);
     
-    // Afficher la notification avec un léger délai
+    // Afficher la notification après un court délai
     setTimeout(() => {
         notification.classList.add('active');
     }, 100);
     
-    // Supprimer la notification après 5 secondes
+    // Masquer et supprimer la notification après 4 secondes
     setTimeout(() => {
         notification.classList.remove('active');
-        
-        // Supprimer l'élément après la fin de l'animation
         setTimeout(() => {
             document.body.removeChild(notification);
         }, 300);
-    }, 5000);
+    }, 4000);
 }
 
 // Afficher le popup de récompense
@@ -1230,4 +1474,65 @@ function updateUserInterface() {
     updateUserLevel();
     updateLevelProgress();
     updateActiveQuestsSidebar();
+}
+
+// Fonction pour effacer la conversation du chat
+function clearChat() {
+    // Trouver le conteneur des messages
+    const messagesContainer = document.querySelector('.chat-messages');
+    if (!messagesContainer) return;
+    
+    // Demander confirmation avant de supprimer
+    if (confirm('Êtes-vous sûr de vouloir effacer toute la conversation ?')) {
+        // Effacer tous les messages sauf le message de bienvenue
+        chatHistory = [];
+        messagesContainer.innerHTML = '';
+        
+        // Ré-afficher le message de bienvenue
+        displayWelcomeMessage();
+        
+        // Afficher une notification
+        showNotification('Conversation effacée', 'La conversation a été effacée avec succès.', 'fas fa-eraser');
+    }
+}
+
+// Fonction pour ouvrir le modal de réglages du chat
+function openChatSettings() {
+    const modal = document.getElementById('chat-settings-modal');
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
+
+// Fonction pour fermer le modal de réglages
+function closeChatSettings() {
+    const modal = document.getElementById('chat-settings-modal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// Écouteur pour le bouton réglage
+const chatSettingsButton = document.getElementById('chat-settings');
+if (chatSettingsButton) {
+    chatSettingsButton.addEventListener('click', openChatSettings);
+}
+
+// Écouteur pour le bouton de fermeture du modal
+const closeSettingsButton = document.getElementById('close-settings-modal');
+if (closeSettingsButton) {
+    closeSettingsButton.addEventListener('click', closeChatSettings);
+}
+
+// Écouteur pour le bouton de sauvegarde des paramètres
+const saveChatSettingsButton = document.getElementById('save-chat-settings');
+if (saveChatSettingsButton) {
+    saveChatSettingsButton.addEventListener('click', () => {
+        // Ici, vous pourriez ajouter du code pour sauvegarder les paramètres
+        // Pour l'instant, on ferme simplement le modal
+        closeChatSettings();
+        
+        // Afficher une notification de confirmation
+        showNotification("Paramètres sauvegardés", "Vos préférences de conversation ont été mises à jour.");
+    });
 }

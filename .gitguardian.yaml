@@ -2,4 +2,6 @@ secret:
   ignored_matches:
   - match: 58d57f3ef588dac9f75e14afd4cda35b4bc898e95b7cb414cdd7b87412daf99e
     name: Generic High Entropy Secret - script.js:l.2
+  - match: 1d0d316c11b40cd2dc8403435cfbdedfbd4b6660b515e63a90466f6cf97dd16b
+    name: Generic High Entropy Secret - script.js:l.428
 version: 2
