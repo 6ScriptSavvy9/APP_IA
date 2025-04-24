@@ -6,6 +6,8 @@
 
 Odyssée IA est une application web interactive qui propose une expérience gamifiée pour apprendre les concepts de l'intelligence artificielle. L'application combine un chatbot IA, des quêtes pédagogiques et un atelier de prompting dans une interface ludique et engageante.
 
+Acceder au site directement : https://6scriptsavvy9.github.io/APP_IA/
+
 ## ✨ Fonctionnalités
 
 - **Chat IA interactif** : Conversez avec un assistant IA et posez-lui toutes vos questions sur l'intelligence artificielle
