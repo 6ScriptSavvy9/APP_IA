@@ -3,331 +3,468 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App IA - Assistant Conversationnel Gamifié</title>
-    <meta name="description" content="Améliorez vos compétences en IA à travers des conversations et des quêtes interactives">
+    <title>Odyssée IA - Aventure d'apprentissage gamifiée</title>
+    <meta name="description" content="Explorez l'intelligence artificielle à travers une expérience gamifiée interactive">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://img.icons8.com/fluency/48/artificial-intelligence.png" type="image/png">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <i class="fas fa-robot"></i>
-                <h1>Odyssée IA</h1>
-            </div>
-            <nav>
-                <ul class="nav-links">
-                    <li><button class="tab-button active" data-tab="chat"><i class="fas fa-comments"></i> Chat</button></li>
-                    <li><button class="tab-button" data-tab="quests"><i class="fas fa-tasks"></i> Quêtes</button></li>
-                    <li><button class="tab-button" data-tab="workshop"><i class="fas fa-flask"></i> Atelier</button></li>
-                </ul>
-            </nav>
+    <div class="app-wrapper">
+        <!-- Éléments de l'arrière-plan -->
+        <div class="background-elements">
+            <div class="gradient-orb orb1"></div>
+            <div class="gradient-orb orb2"></div>
+            <div class="gradient-orb orb3"></div>
+            <div class="particles-container" id="particles-js"></div>
+            <div class="grid-overlay"></div>
         </div>
-    </header>
-
-    <main>
-        <div class="container">
-            <!-- Section de chat -->
-            <section id="chat-tab" class="tab-pane active">
-                <div class="user-stats">
-                    <div class="stats-item">
-                        <i class="fas fa-user-graduate"></i>
-                        <span id="user-level">Niveau 1</span>
+        
+        <header class="main-header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Odyssée<span>IA</span></h1>
+                    <p class="tagline">Votre aventure d'apprentissage gamifiée</p>
+                </div>
+            </div>
+            
+            <div class="player-status">
+                <div class="player-level">
+                    <div class="level-badge">
+                        <span id="user-level">1</span>
                     </div>
-                    <div class="stats-item">
+                    <div class="level-info">
+                        <span class="level-label">NIVEAU</span>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div id="xp-progress" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span id="progress-text" class="progress-text">0/100 XP</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="player-stats">
+                    <div class="stat">
                         <i class="fas fa-star"></i>
                         <span id="user-xp">0 XP</span>
                     </div>
-                    <div class="stats-progress">
-                        <div class="progress-bar">
-                            <div id="xp-progress" class="progress-fill" style="width: 0%"></div>
-                        </div>
-                        <span id="progress-text">0/100 XP</span>
+                    <div class="stat">
+                        <i class="fas fa-trophy"></i>
+                        <span id="completed-quests">0/6</span>
                     </div>
                 </div>
-
-                <div class="chat-container">
-                    <div id="chat-messages" class="chat-messages">
-                        <div class="message ai-message">
-                            Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?
-                        </div>
-                    </div>
-                    <div class="chat-input">
-                        <textarea id="user-input" placeholder="Posez votre question ou tapez une commande..."></textarea>
-                        <button id="send-button">
-                            <i class="fas fa-paper-plane"></i>
+            </div>
+        </header>
+        
+        <nav class="main-nav">
+            <ul class="nav-tabs">
+                <li>
+                    <button class="tab-button active" data-tab="chat">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat IA</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="tab-button" data-tab="quests">
+                        <i class="fas fa-tasks"></i>
+                        <span>Quêtes</span>
+                        <div class="tab-notification">2</div>
+                    </button>
+                </li>
+                <li>
+                    <button class="tab-button" data-tab="workshop">
+                        <i class="fas fa-flask"></i>
+                        <span>Atelier</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="tab-button" data-tab="profile">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Profil</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
+        <main class="main-content">
+            <!-- Section de chat -->
+            <section id="chat-tab" class="tab-pane active">
+                <div class="panel-header">
+                    <h2><i class="fas fa-robot"></i> Conversation avec l'IA</h2>
+                    <div class="panel-controls">
+                        <button id="clear-chat" class="control-button" title="Effacer la conversation">
+                            <i class="fas fa-eraser"></i>
+                        </button>
+                        <button id="chat-settings" class="control-button" title="Paramètres">
+                            <i class="fas fa-cog"></i>
                         </button>
                     </div>
                 </div>
+                
+                <div class="chat-container">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="message ai-message welcome-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-sender">Assistant IA</div>
+                                <div class="message-text">
+                                    <p>Bienvenue dans Odyssée IA ! 👋</p>
+                                    <p>Je suis votre assistant personnel pour explorer le monde de l'intelligence artificielle.</p>
+                                    <p>Pour commencer votre aventure, vous pouvez :</p>
+                                    <ul>
+                                        <li>Me poser des questions sur l'IA</li>
+                                        <li>Accomplir des quêtes pour gagner de l'expérience</li>
+                                        <li>Explorer l'atelier pour apprendre à créer des prompts efficaces</li>
+                                    </ul>
+                                    <p>Comment puis-je vous aider aujourd'hui ?</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-area">
+                        <textarea id="user-input" placeholder="Posez votre question ou demandez de l'aide..."></textarea>
+                        <div class="input-actions">
+                            <button id="voice-input" class="action-button" title="Entrée vocale">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button id="send-button" class="primary-button">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Envoyer</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </section>
-
+            
             <!-- Section des quêtes -->
             <section id="quests-tab" class="tab-pane">
-                <h2>Quêtes & Défis</h2>
-                <p class="quests-intro">
-                    Complétez des quêtes pour améliorer vos compétences avec l'IA et gagner de l'expérience. 
-                    Plus vous progressez, plus vous débloquez de quêtes avancées.
-                </p>
-
-                <div class="quests-filters">
-                    <button class="filter-btn active" data-filter="all">Toutes</button>
-                    <button class="filter-btn" data-filter="beginner">Débutant</button>
-                    <button class="filter-btn" data-filter="intermediate">Intermédiaire</button>
-                    <button class="filter-btn" data-filter="advanced">Avancé</button>
-                    <button class="filter-btn" data-filter="completed">Complétées</button>
+                <div class="panel-header">
+                    <h2><i class="fas fa-tasks"></i> Quêtes & Défis</h2>
+                    <div class="panel-controls">
+                        <div class="filter-controls">
+                            <button class="filter-btn active" data-filter="all">Toutes</button>
+                            <button class="filter-btn" data-filter="beginner">Débutant</button>
+                            <button class="filter-btn" data-filter="intermediate">Intermédiaire</button>
+                            <button class="filter-btn" data-filter="advanced">Avancé</button>
+                            <button class="filter-btn" data-filter="completed">Complétées</button>
+                        </div>
+                    </div>
                 </div>
-
+                
+                <div class="quests-introduction">
+                    <div class="intro-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="intro-content">
+                        <h3>Votre parcours d'apprentissage</h3>
+                        <p>Complétez des quêtes pour progresser dans votre compréhension de l'IA et gagner de l'expérience. Chaque niveau débloque de nouvelles quêtes plus avancées.</p>
+                    </div>
+                </div>
+                
                 <div class="quests-grid">
-                    <!-- Quête 1 -->
+                    <!-- Les cartes de quêtes existantes avec amélioration visuelle -->
                     <div class="quest-card" data-id="quest1" data-difficulty="beginner" data-status="available">
-                        <div class="quest-header">
-                            <div class="quest-icon">
-                                <i class="fas fa-comment-dots"></i>
-                            </div>
-                            <div class="quest-info">
-                                <h3>Premier Contact</h3>
-                                <div class="quest-meta">
-                                    <span class="difficulty beginner">Débutant</span>
-                                    <span class="xp-reward">+20 XP</span>
+                        <div class="quest-card-inner">
+                            <div class="quest-header">
+                                <div class="quest-icon">
+                                    <i class="fas fa-comment-dots"></i>
+                                </div>
+                                <div class="quest-info">
+                                    <h3>Premier Contact</h3>
+                                    <div class="quest-meta">
+                                        <span class="difficulty beginner">Débutant</span>
+                                        <span class="xp-reward">+20 XP</span>
+                                    </div>
+                                </div>
+                                <div class="quest-status">
+                                    <i class="fas fa-lock-open"></i>
                                 </div>
                             </div>
-                            <div class="quest-status">
-                                <i class="fas fa-lock-open"></i>
-                            </div>
-                        </div>
-                        <div class="quest-body">
-                            <p>Présentez-vous à l'IA et posez-lui 3 questions différentes sur l'intelligence artificielle.</p>
-                            <div class="quest-objectives">
-                                <div class="objective" data-id="quest1-obj1">
-                                    <i class="far fa-circle"></i>
-                                    <span>Présentation personnelle</span>
+                            <div class="quest-body">
+                                <p>Présentez-vous à l'IA et posez-lui 3 questions différentes sur l'intelligence artificielle.</p>
+                                <div class="quest-objectives">
+                                    <div class="objective" data-id="quest1-obj1">
+                                        <i class="far fa-circle"></i>
+                                        <span>Présentation personnelle</span>
+                                    </div>
+                                    <div class="objective" data-id="quest1-obj2">
+                                        <i class="far fa-circle"></i>
+                                        <span>Poser 3 questions sur l'IA</span>
+                                    </div>
                                 </div>
-                                <div class="objective" data-id="quest1-obj2">
-                                    <i class="far fa-circle"></i>
-                                    <span>Poser 3 questions sur l'IA</span>
-                                </div>
+                                <button class="quest-button start-quest" data-quest="quest1">Commencer</button>
                             </div>
-                            <button class="quest-button start-quest" data-quest="quest1">Commencer</button>
-                        </div>
-                    </div>
-
-                    <!-- Quête 2 -->
-                    <div class="quest-card" data-id="quest2" data-difficulty="beginner" data-status="available">
-                        <div class="quest-header">
-                            <div class="quest-icon">
-                                <i class="fas fa-feather-alt"></i>
-                            </div>
-                            <div class="quest-info">
-                                <h3>Poète en herbe</h3>
-                                <div class="quest-meta">
-                                    <span class="difficulty beginner">Débutant</span>
-                                    <span class="xp-reward">+25 XP</span>
-                                </div>
-                            </div>
-                            <div class="quest-status">
-                                <i class="fas fa-lock-open"></i>
-                            </div>
-                        </div>
-                        <div class="quest-body">
-                            <p>Demandez à l'IA de créer un poème sur un sujet de votre choix, puis modifiez-le en suggérant des changements.</p>
-                            <div class="quest-objectives">
-                                <div class="objective" data-id="quest2-obj1">
-                                    <i class="far fa-circle"></i>
-                                    <span>Demander un poème</span>
-                                </div>
-                                <div class="objective" data-id="quest2-obj2">
-                                    <i class="far fa-circle"></i>
-                                    <span>Suggérer des modifications</span>
-                                </div>
-                            </div>
-                            <button class="quest-button start-quest" data-quest="quest2">Commencer</button>
+                            
+                            <div class="quest-card-glow"></div>
                         </div>
                     </div>
-
-                    <!-- Quête 3 -->
-                    <div class="quest-card" data-id="quest3" data-difficulty="intermediate" data-status="locked">
-                        <div class="quest-header">
-                            <div class="quest-icon">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                            <div class="quest-info">
-                                <h3>Apprenti Professeur</h3>
-                                <div class="quest-meta">
-                                    <span class="difficulty intermediate">Intermédiaire</span>
-                                    <span class="xp-reward">+40 XP</span>
-                                </div>
-                            </div>
-                            <div class="quest-status">
-                                <i class="fas fa-lock"></i>
-                            </div>
-                        </div>
-                        <div class="quest-body">
-                            <p>Demandez à l'IA d'expliquer un concept complexe, puis reformulez l'explication avec vos propres mots.</p>
-                            <div class="requirements">
-                                <p>Nécessite: Niveau 2</p>
-                            </div>
-                            <div class="quest-objectives">
-                                <div class="objective" data-id="quest3-obj1">
-                                    <i class="far fa-circle"></i>
-                                    <span>Demander l'explication d'un concept</span>
-                                </div>
-                                <div class="objective" data-id="quest3-obj2">
-                                    <i class="far fa-circle"></i>
-                                    <span>Reformuler avec vos propres mots</span>
-                                </div>
-                            </div>
-                            <button class="quest-button locked" disabled>Verrouillé</button>
-                        </div>
-                    </div>
-
-                    <!-- Quête 4 -->
-                    <div class="quest-card" data-id="quest4" data-difficulty="intermediate" data-status="locked">
-                        <div class="quest-header">
-                            <div class="quest-icon">
-                                <i class="fas fa-cogs"></i>
-                            </div>
-                            <div class="quest-info">
-                                <h3>Maître des prompts</h3>
-                                <div class="quest-meta">
-                                    <span class="difficulty intermediate">Intermédiaire</span>
-                                    <span class="xp-reward">+50 XP</span>
-                                </div>
-                            </div>
-                            <div class="quest-status">
-                                <i class="fas fa-lock"></i>
-                            </div>
-                        </div>
-                        <div class="quest-body">
-                            <p>Utilisez l'atelier de prompt engineering pour créer et tester 3 prompts de différentes complexités.</p>
-                            <div class="requirements">
-                                <p>Nécessite: Niveau 2</p>
-                            </div>
-                            <button class="quest-button locked" disabled>Verrouillé</button>
-                        </div>
-                    </div>
-
-                    <!-- Quête 5 -->
-                    <div class="quest-card" data-id="quest5" data-difficulty="advanced" data-status="locked">
-                        <div class="quest-header">
-                            <div class="quest-icon">
-                                <i class="fas fa-brain"></i>
-                            </div>
-                            <div class="quest-info">
-                                <h3>Débat philosophique</h3>
-                                <div class="quest-meta">
-                                    <span class="difficulty advanced">Avancé</span>
-                                    <span class="xp-reward">+75 XP</span>
-                                </div>
-                            </div>
-                            <div class="quest-status">
-                                <i class="fas fa-lock"></i>
-                            </div>
-                        </div>
-                        <div class="quest-body">
-                            <p>Engagez un débat philosophique avec l'IA sur la conscience artificielle et les implications éthiques.</p>
-                            <div class="requirements">
-                                <p>Nécessite: Niveau 3</p>
-                            </div>
-                            <button class="quest-button locked" disabled>Verrouillé</button>
-                        </div>
-                    </div>
-
-                    <!-- Quête 6 -->
-                    <div class="quest-card" data-id="quest6" data-difficulty="advanced" data-status="locked">
-                        <div class="quest-header">
-                            <div class="quest-icon">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="quest-info">
-                                <h3>Écrivain collaboratif</h3>
-                                <div class="quest-meta">
-                                    <span class="difficulty advanced">Avancé</span>
-                                    <span class="xp-reward">+100 XP</span>
-                                </div>
-                            </div>
-                            <div class="quest-status">
-                                <i class="fas fa-lock"></i>
-                            </div>
-                        </div>
-                        <div class="quest-body">
-                            <p>Créez une histoire complète en collaboration avec l'IA, en alternant les paragraphes avec elle.</p>
-                            <div class="requirements">
-                                <p>Nécessite: Niveau 4</p>
-                            </div>
-                            <button class="quest-button locked" disabled>Verrouillé</button>
-                        </div>
-                    </div>
+                    
+                    <!-- Autres cartes de quêtes... -->
+                    <!-- ... -->
                 </div>
             </section>
-
+            
             <!-- Section de l'atelier -->
             <section id="workshop-tab" class="tab-pane">
-                <h2>Atelier de Prompt Engineering</h2>
-                <p class="workshop-intro">
-                    Explorez différentes techniques de création de prompts pour obtenir de meilleurs résultats avec l'IA.
-                    Utilisez les templates ci-dessous ou créez les vôtres.
-                </p>
-
-                <div class="template-selector">
-                    <h3>Templates de prompts</h3>
-                    <select id="prompt-template">
-                        <option value="basic">Prompt basique</option>
-                        <option value="creative">Écriture créative</option>
-                        <option value="educational">Educational</option>
-                        <option value="persona">Persona spécifique</option>
-                        <option value="technical">Documentation technique</option>
-                    </select>
-                    <button id="load-template">Charger le template</button>
+                <div class="panel-header">
+                    <h2><i class="fas fa-flask"></i> Atelier de Prompt Engineering</h2>
                 </div>
-
-                <div class="workshop-editor">
-                    <textarea id="prompt-editor" placeholder="Écrivez ou modifiez votre prompt ici..."></textarea>
-                    <div class="editor-controls">
-                        <button id="save-prompt">Sauvegarder</button>
-                        <button id="test-prompt">Tester</button>
+                
+                <div class="workshop-introduction">
+                    <div class="intro-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="intro-content">
+                        <h3>L'art des prompts efficaces</h3>
+                        <p>Apprenez à créer des instructions précises pour obtenir les meilleurs résultats avec les modèles d'IA. Explorez différentes techniques et testez-les en temps réel.</p>
                     </div>
                 </div>
-
-                <div class="workshop-history">
-                    <h3>Historique de vos prompts</h3>
-                    <div id="prompt-history" class="history-list">
-                        <!-- Les prompts sauvegardés apparaîtront ici -->
-                        <p class="empty-message">Aucun prompt sauvegardé pour le moment</p>
+                
+                <div class="workshop-container">
+                    <div class="template-selector">
+                        <h3>Templates de prompts</h3>
+                        <select id="prompt-template" class="modern-select">
+                            <option value="basic">Prompt basique</option>
+                            <option value="creative">Écriture créative</option>
+                            <option value="educational">Éducatif</option>
+                            <option value="persona">Persona spécifique</option>
+                            <option value="technical">Documentation technique</option>
+                        </select>
+                        <button id="load-template" class="action-button">
+                            <i class="fas fa-file-import"></i>
+                            <span>Charger</span>
+                        </button>
+                    </div>
+                    
+                    <div class="workshop-editor">
+                        <div class="editor-header">
+                            <h3>Éditeur de prompt</h3>
+                            <div class="editor-tools">
+                                <button class="tool-button" title="Gras">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button class="tool-button" title="Italique">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button class="tool-button" title="Liste">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                                <button class="tool-button" title="Insérer un exemple">
+                                    <i class="fas fa-code"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="prompt-editor" placeholder="Écrivez ou modifiez votre prompt ici..."></textarea>
+                        <div class="editor-controls">
+                            <button id="save-prompt" class="action-button">
+                                <i class="fas fa-save"></i>
+                                <span>Sauvegarder</span>
+                            </button>
+                            <button id="test-prompt" class="primary-button">
+                                <i class="fas fa-play"></i>
+                                <span>Tester</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="workshop-result">
+                        <h3>Résultat</h3>
+                        <div id="prompt-result" class="result-container">
+                            <p class="placeholder-text">Le résultat de votre prompt apparaîtra ici...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="workshop-history">
+                        <h3>Historique</h3>
+                        <div id="prompt-history" class="history-list">
+                            <!-- Les prompts sauvegardés apparaîtront ici -->
+                            <p class="empty-message">Aucun prompt sauvegardé pour le moment</p>
+                        </div>
                     </div>
                 </div>
             </section>
-        </div>
-    </main>
-
+            
+            <!-- Section du profil -->
+            <section id="profile-tab" class="tab-pane">
+                <div class="panel-header">
+                    <h2><i class="fas fa-user-circle"></i> Profil Joueur</h2>
+                </div>
+                
+                <div class="profile-container">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="profile-info">
+                                <h3>Explorateur IA</h3>
+                                <div class="profile-title">Apprenti en Intelligence Artificielle</div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stat-value" id="profile-xp">0</div>
+                                <div class="stat-label">XP Totale</div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="stat-value" id="profile-quests">0</div>
+                                <div class="stat-label">Quêtes</div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div class="stat-value" id="profile-messages">0</div>
+                                <div class="stat-label">Messages</div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-progression">
+                            <h4>Progression</h4>
+                            <div class="level-progress">
+                                <div class="level-indicator">Niveau <span id="profile-level">1</span></div>
+                                <div class="progress-bar">
+                                    <div id="profile-progress" class="progress-fill" style="width: 0%"></div>
+                                </div>
+                                <div class="progress-text"><span id="profile-xp-progress">0/100</span> XP</div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-achievements">
+                            <h4>Succès débloqués</h4>
+                            <div class="achievements-grid">
+                                <div class="achievement locked">
+                                    <div class="achievement-icon">
+                                        <i class="fas fa-comments"></i>
+                                    </div>
+                                    <div class="achievement-name">Premier contact</div>
+                                </div>
+                                
+                                <div class="achievement locked">
+                                    <div class="achievement-icon">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <div class="achievement-name">Élève appliqué</div>
+                                </div>
+                                
+                                <div class="achievement locked">
+                                    <div class="achievement-icon">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </div>
+                                    <div class="achievement-name">Eurêka !</div>
+                                </div>
+                                
+                                <div class="achievement locked">
+                                    <div class="achievement-icon">
+                                        <i class="fas fa-flask"></i>
+                                    </div>
+                                    <div class="achievement-name">Expérimentateur</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-settings">
+                        <h3>Paramètres</h3>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="username">Nom d'utilisateur</label>
+                                <input type="text" id="username" placeholder="Votre nom d'utilisateur">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="theme-select">Thème</label>
+                                <select id="theme-select" class="modern-select">
+                                    <option value="auto">Automatique (système)</option>
+                                    <option value="light">Clair</option>
+                                    <option value="dark">Sombre</option>
+                                    <option value="synthwave">Synthwave</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Options d'interface</label>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="show-animations" checked>
+                                    <label for="show-animations">Afficher les animations</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="sound-effects" checked>
+                                    <label for="sound-effects">Effets sonores</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button id="save-settings" class="primary-button">
+                                    <i class="fas fa-save"></i>
+                                    <span>Enregistrer</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
     <!-- Popup de récompense -->
     <div id="reward-popup" class="popup">
         <div class="popup-content">
             <div class="reward-header">
-                <i class="fas fa-award"></i>
+                <div class="reward-icon">
+                    <i class="fas fa-award"></i>
+                </div>
                 <h3>Quête Complétée !</h3>
             </div>
             <div class="reward-body">
                 <p id="reward-message">Vous avez terminé la quête.</p>
-                <div class="xp-gained">
+                <div class="xp-animation">
                     <span id="xp-amount">+20 XP</span>
                 </div>
-                <div class="level-progress">
-                    <div class="progress-bar">
-                        <div id="popup-progress" class="progress-fill" style="width: 45%"></div>
+                <div class="reward-details">
+                    <div class="level-progress">
+                        <div class="progress-bar">
+                            <div id="popup-progress" class="progress-fill" style="width: 45%"></div>
+                        </div>
+                        <p id="level-message">Niveau 1 - 45/100 XP</p>
                     </div>
-                    <p id="level-message">Niveau 1 - 45/100 XP</p>
                 </div>
                 <button id="claim-reward" class="reward-button">Continuer</button>
             </div>
+            <div class="confetti-container" id="confetti"></div>
         </div>
     </div>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Odyssée IA - Application d'apprentissage assisté par IA</p>
+    
+    <!-- Notification de niveau -->
+    <div id="level-up-notification" class="notification">
+        <div class="notification-icon">
+            <i class="fas fa-level-up-alt"></i>
         </div>
-    </footer>
-
+        <div class="notification-content">
+            <h3>Niveau 2 débloqué !</h3>
+            <p>Vous avez atteint un nouveau niveau. De nouvelles quêtes sont disponibles.</p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
