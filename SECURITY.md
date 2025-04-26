@@ -16,7 +16,7 @@ La sécurité d'Odyssée IA est une priorité pour nous. Si vous découvrez une 
 ### Comment signaler
 
 1. **N'utilisez pas les issues GitHub publiques** pour signaler des vulnérabilités
-2. Envoyez plutôt un email à [security@odyssee-ia.com](mailto:security@odyssee-ia.com)
+2. Envoyez plutôt un email à [matiasgoncalvesfr@gmail.com](mailto:matiasgoncalvesfr@gmail.com)
 3. Incluez autant de détails que possible :
    - Type de vulnérabilité
    - Étapes complètes pour reproduire le problème
