@@ -11,7 +11,7 @@ Les versions suivantes d'Odyssée IA sont actuellement prises en charge avec des
 
 ## Signaler une vulnérabilité
 
-La sécurité d'Odyssée IA est une priorité pour nous. Si vous découvrez une faille de sécurité, veuillez nous en informer immédiatement.
+La sécurité d'Odyssée IA est une priorité. Si vous découvrez une faille de sécurité, veuillez m'en informer immédiatement.
 
 ### Comment signaler
 
@@ -22,15 +22,6 @@ La sécurité d'Odyssée IA est une priorité pour nous. Si vous découvrez une 
    - Étapes complètes pour reproduire le problème
    - Impact potentiel
    - Suggestions pour la résolution (si possible)
-
-### Notre engagement
-
-Lorsque vous signalez une vulnérabilité, vous pouvez vous attendre à ce que :
-
-- Nous accusions réception de votre rapport sous 48 heures
-- Nous vous fournissions une estimation du temps nécessaire pour résoudre le problème
-- Nous vous informions des progrès réalisés pour corriger la vulnérabilité
-- Nous vous donnions crédit pour la découverte (sauf si vous préférez rester anonyme)
 
 ## Bonnes pratiques de sécurité pour les utilisateurs
 
@@ -50,14 +41,3 @@ Pour une expérience sécurisée, nous recommandons d'utiliser les dernières ve
 - Firefox
 - Edge
 - Safari
-
-## Historique de sécurité
-
-| Date       | Version | Vulnérabilité                          | Résolution                            |
-|------------|---------|----------------------------------------|---------------------------------------|
-| 2025-03-15 | 1.0.0   | Validation d'entrée insuffisante       | Implémentation de filtres d'entrée    |
-| 2025-04-01 | 1.0.1   | Stockage local non sécurisé            | Chiffrement des données locales       |
-
----
-
-Cette politique de sécurité a été mise à jour pour la dernière fois le 24 avril 2025.
